@@ -12,16 +12,22 @@ This is a 9.2GB file that is required to run StrVCTVRE. It can be downloaded [he
 ### 3. Download and install the following packages
 * numpy
 * pandas
+* joblib
 * pybedtools
 * cyvcf2
-* joblib
-* pyBigWig
+* pybigwig
 
 In conda, numpy can be downloaded and installed using the command 
 ```
 conda install numpy
 ```
-and similarly for the other packages.
+and similarly for pandas and joblib.
+
+pybedtools is distributed through bioconda, so it can be downloaded and install using the command
+```
+conda install -c bioconda pybedtools
+```
+and similarly for cyvcf and pybigwig.
 
 ### 4. Download StrVCTVRE
 Linux users should [download StrVCTVRE tarball](https://github.com/andrewSharo/StrVCTVRE_beta/archive/v.0.1.tar.gz). Other users should download [StrVCTVRE zip file for Windows or Mac](https://github.com/andrewSharo/StrVCTVRE_beta/archive/v.0.1.zip). 
