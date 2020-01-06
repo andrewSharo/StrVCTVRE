@@ -13,6 +13,7 @@ This is a 9.2GB file that is required to run StrVCTVRE. It can be downloaded [he
 * numpy
 * pandas
 * joblib
+* scikit-learn
 * pybedtools
 * cyvcf2
 * pybigwig
@@ -21,7 +22,7 @@ In conda, numpy can be downloaded and installed using the command
 ```
 conda install numpy
 ```
-and similarly for pandas and joblib.
+and similarly for pandas, joblib, and scikit-learn.
 
 pybedtools is distributed through bioconda, so it can be downloaded and install using the command
 ```
