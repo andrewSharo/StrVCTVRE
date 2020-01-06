@@ -32,11 +32,11 @@ Linux users should run tar -xzf \[filename.tar.gz\]. Windows and Mac users shoul
 Inside the uncompressed folder, you will find several files and a folder called 'data'. Please move the 9.2GB hg38.phyloP100way.bw file to the 'data' folder. If this is not possible, you will need to provide the path to this file when running StrVCTVRE (see below).
 
 ### 6. Running StrVCTVRE
-To run StrVCTVRE, change directories to the folder containing StrVCTVRE.py, and run 
+To run StrVCTVRE, change your working directory to the folder containing StrVCTVRE.py, and run 
 ```
 python StrVCTVRE.py path_to_input_vcf_to_annotate path_to_output_annotated_vcf [path_to_hg38.phyloP100way.bw]
 ``` 
-The last argument in optional depending on whether the file is in the 'data' folder. 
+The last argument is optional depending on whether hg38.phyloP100way.bw is in the 'data' folder. 
 
 For example, a user who moved hg38.phyloP100way.bw to the 'data' folder might run
 ```
@@ -48,5 +48,7 @@ python StrVCTVRE.py /data/patients/patient1.vcf /data/patients/patient1_annotate
 ```
 
 ### 7. Other notes
+StrVCTVRE only annotates structural variant records that overlap an exon and have 'END' and 'SVTYPE' entries in the INFO column. SVs that do not contain 'END' and 'SVTYPE' entries will be annotated with 'NA.' SVs that are not exonic will be annotated with 'not_exonic.'
+
 StrVCTVRE can annotate and output vcf files compressed with bgzip. It uses file extensions to know whether an input or output file should be compressed or not.
 
