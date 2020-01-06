@@ -127,7 +127,7 @@ def annotateSVs(inpath, outpath, phylopPath):
             try:
                 x.append(np.nan_to_num(np.array(consBW.values(df.loc[i,'chrom'], int(df.loc[i,'start']), int(df.loc[i,'end'])))))
             except:
-                print df.loc[i,'start']
+                print(df.loc[i,'start'])
                 x.append(np.array([0.5]))
     x = np.asarray(x)
     # get the mean of the top 100 most conserved positions
