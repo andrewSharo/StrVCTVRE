@@ -37,8 +37,8 @@ Linux users should run tar -xzf \[filename.tar.gz\]. Windows and Mac users shoul
 
 Inside the uncompressed folder, you will find several files and a folder called 'data'. Please move the 9.2GB hg38.phyloP100way.bw file to the 'data' folder. If this is not possible, you will need to provide the path to this file when running StrVCTVRE (see below).
 
-### 6. Running StrVCTVRE
-To run StrVCTVRE, change your working directory to the folder containing StrVCTVRE.py, and run 
+### 6. Run StrVCTVRE
+To run StrVCTVRE, change your working directory to the uncompressed folder containing StrVCTVRE.py, and run 
 ```
 python StrVCTVRE.py path_to_input_vcf_to_annotate path_to_output_annotated_vcf [path_to_hg38.phyloP100way.bw]
 ``` 
