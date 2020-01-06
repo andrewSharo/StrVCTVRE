@@ -13,7 +13,6 @@ import pandas as pd
 import pybedtools
 from cyvcf2 import VCF,Writer
 import annotationFinalForStrVCTVRE
-reload(annotationFinalForStrVCTVRE)
 from joblib import dump, load
 
 
@@ -150,7 +149,7 @@ w = Writer(vcfPathOut,vcf)
 count = 0
 for var in vcf:
     if var.INFO.get('END') and var.INFO.get('SVTYPE'):
-        if an.index.contains(count):
+        if count in an.index:
             var.INFO['StrVCTVRE'] = an.loc[count,'path']
         else:
             var.INFO['StrVCTVRE'] = 'not_exonic'
