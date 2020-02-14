@@ -1,7 +1,7 @@
 # StrVCTVRE_beta
 Early Release version of StrVCTVRE
 
-## To run StrVCTVRE, following these steps:
+## To run StrVCTVRE, follow these steps:
 
 ### 1. Download and install Python (if not done already)
 I recommend [installing python through Conda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/)
