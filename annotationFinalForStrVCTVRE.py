@@ -7,6 +7,7 @@ import pandas as pd
 import pybedtools
 import pyBigWig
 import numpy as np
+import os
 
 
 # In[1]:
@@ -69,7 +70,7 @@ def cdsEnd(df):
 # In[2]:
 
 # for def:
-def annotateSVs(inpath, outpath, phylopPath):
+def annotateSVs(inpath, outpath, phylopPath, tempdir):
 
     # read csv file into dataframe
     
@@ -79,10 +80,10 @@ def annotateSVs(inpath, outpath, phylopPath):
 
     exons = pybedtools.BedTool('data/exons_Appris_featurized_transcript_Chr1-Y_loeuf.sorted.bed')
     df['ID'] = 'sv' + pd.Series(df.index.values).apply(str)
-    df[['chrom','start','end','ID']].to_csv('data/df.bed',sep='\t', index=False,header=False)
-    a = pybedtools.BedTool('data/df.bed')
-    b = a.intersect(exons, wa=True, wb=True).saveas('data/dfExonOverlap.bed')
-    exonOverlap = pd.read_csv('data/dfExonOverlap.bed', sep='\t', header=None, 
+    df[['chrom','start','end','ID']].to_csv(os.path.join(tempdir,'df.bed'),sep='\t', index=False,header=False)
+    a = pybedtools.BedTool(os.path.join(tempdir,'df.bed'))
+    b = a.intersect(exons, wa=True, wb=True).saveas(os.path.join(tempdir,'dfExonOverlap.bed'))
+    exonOverlap = pd.read_csv(os.path.join(tempdir,'dfExonOverlap.bed'), sep='\t', header=None, 
                               names=['chrom', 'start', 'stop', 'ID', 'eChrom', 'eStart', 'eStop', 'gene', 'exonRank', 'skippable', 'exonsInGene', 'const','pLI','loeuf'])
 
     exonOverlap['numExonsFinal'] = exonOverlap.groupby(by='ID').eStart.transform('size')
@@ -137,10 +138,10 @@ def annotateSVs(inpath, outpath, phylopPath):
     # Add TAD features
 
     tads = pybedtools.BedTool('data/rep12tadsMergedhg38.bed')
-    df[['chrom','start','end','ID']].to_csv('data/df.bed',sep='\t', index=False,header=False)
-    a = pybedtools.BedTool('data/df.bed')
-    b = a.intersect(tads, wa=True, wb=True).saveas('data/dfTadOverlap.bed')
-    tadOverlap = pd.read_csv('data/dfTadOverlap.bed', sep='\t', header=None, 
+    df[['chrom','start','end','ID']].to_csv(os.path.join(tempdir,'df.bed'),sep='\t', index=False,header=False)
+    a = pybedtools.BedTool(os.path.join(tempdir,'df.bed'))
+    b = a.intersect(tads, wa=True, wb=True).saveas(os.path.join(tempdir,'dfTadOverlap.bed'))
+    tadOverlap = pd.read_csv(os.path.join(tempdir,'dfTadOverlap.bed'), sep='\t', header=None, 
                               names=['chrom', 'start', 'stop', 'ID', 'tChrom', 'tStart', 'tStop', 'strength'])
 
     tadOverlap['maxStrength'] = tadOverlap.groupby(by='ID').strength.transform('max')
@@ -151,10 +152,10 @@ def annotateSVs(inpath, outpath, phylopPath):
     ## Add amino acid features
 
     cds = pybedtools.BedTool('data/exons_CDS_Chr1-Y.sorted.bed')
-    df[['chrom','start','end','ID']].to_csv('data/df.bed',sep='\t', index=False,header=False)
-    a = pybedtools.BedTool('data/df.bed')
-    b = a.intersect(cds, wa=True, wb=True).saveas('data/dfCDSOverlap.bed')
-    cdsOverlap = pd.read_csv('data/dfCDSOverlap.bed', sep='\t', header=None, 
+    df[['chrom','start','end','ID']].to_csv(os.path.join(tempdir,'df.bed'),sep='\t', index=False,header=False)
+    a = pybedtools.BedTool(os.path.join(tempdir,'df.bed'))
+    b = a.intersect(cds, wa=True, wb=True).saveas(os.path.join(tempdir,'dfCDSOverlap.bed'))
+    cdsOverlap = pd.read_csv(os.path.join(tempdir,'dfCDSOverlap.bed'), sep='\t', header=None, 
                               names=['chrom', 'start', 'stop', 'ID', 'cChrom', 'cStart', 'cStop', 'CDSLength', 'size', 'exonRank', 'strand','gene', 'cdsCount', 'pLI','loeuf'])
 
 
@@ -200,10 +201,10 @@ def annotateSVs(inpath, outpath, phylopPath):
     # Add exon inclusion features
 
     usage = pybedtools.BedTool('data/summary_exon_usage_hg38.sorted.bed')
-    final[['chrom','start','end','ID']].to_csv('data/df.bed',sep='\t', index=False,header=False)
-    a = pybedtools.BedTool('data/df.bed')
-    b = a.intersect(usage, wa=True, wb=True).saveas('data/dfUsageOverlap.bed')
-    usageOverlap = pd.read_csv('data/dfUsageOverlap.bed', sep='\t', header=None, 
+    final[['chrom','start','end','ID']].to_csv(os.path.join(tempdir,'df.bed'),sep='\t', index=False,header=False)
+    a = pybedtools.BedTool(os.path.join(tempdir,'df.bed'))
+    b = a.intersect(usage, wa=True, wb=True).saveas(os.path.join(tempdir,'dfUsageOverlap.bed'))
+    usageOverlap = pd.read_csv(os.path.join(tempdir,'dfUsageOverlap.bed'), sep='\t', header=None, 
                               names=['chrom', 'start', 'stop', 'ID', 'uChrom', 'uStart', 'uStop', 'avgUsage', 'avgExp'])
     out = usageOverlap.groupby('ID').apply(topUsage,n=size)
     out.drop_duplicates(subset='ID', inplace=True)
