@@ -1,5 +1,5 @@
-# StrVCTVRE_beta
-Early Release version of StrVCTVRE
+# StrVCTVRE
+Structural variant impact predictor developed by Andrew Sharo and Steven Brenner at UC Berkeley. StrVCTVRE annotates exonic deletions and duplications with a score from 0 to 1, where higher scores are more likely to be pathogenic. Accepts vcf and bed file input. Manuscript in development. StrVCTVRE stands for <ins>Str</ins>uctural <ins>V</ins>ariant <ins>C</ins>lassifier <ins>T</ins>rained on <ins>V</ins>ariants <ins>R</ins>are and <ins>E</ins>xonic.
 
 ## To run StrVCTVRE, follow these steps:
 
@@ -41,21 +41,29 @@ Inside the uncompressed folder, you will find several files and a folder called 
 ### 6. Run StrVCTVRE
 To run StrVCTVRE, change your working directory to the uncompressed folder containing StrVCTVRE.py, and run 
 ```
-python StrVCTVRE.py path_to_input_vcf_to_annotate path_to_output_annotated_vcf [path_to_hg38.phyloP100way.bw]
+python StrVCTVRE.py -i /path/to/input/file -o /path/to/output/file [-f {vcf,bed}] [-p path/to/hg38.phyloP100way.bw]
 ``` 
-The last argument is optional depending on whether hg38.phyloP100way.bw is in the 'data' folder. 
+The -f argument is optional and defaults to vcf. The -p argument is optional depending on whether hg38.phyloP100way.bw is in the 'data' folder. 
 
-For example, a user who moved hg38.phyloP100way.bw to the 'data' folder might run
+For example, a user who wants to annotate a vcf file and who moved hg38.phyloP100way.bw to the 'data' folder might run
 ```
-python StrVCTVRE.py /data/patients/patient1.vcf /data/patients/patient1_annotated.vcf
+python StrVCTVRE.py -i /home/user/patient1.vcf -o /home/user/patient1_annotated.vcf 
 ```
 A user who has hg38.phyloP100way.bw in a different folder might run
 ```
-python StrVCTVRE.py /data/patients/patient1.vcf /data/patients/patient1_annotated.vcf /data/conservation/hg38.phyloP100way.bw
+python StrVCTVRE.py /home/user/patient1.vcf /home/user/patient1_annotated.vcf /home/conservation/hg38.phyloP100way.bw
+```
+A user who wants to annotate a bed file and who moved hg38.phyloP100way.bw to the 'data' folder might run
+```
+python StrVCTVRE.py -i /home/user/patient1.bed -o /home/user/patient1_annotated.bed -f bed 
 ```
 
 ### 7. Other notes
-StrVCTVRE only annotates structural variant records that overlap an exon and have 'END' and 'SVTYPE' entries in the INFO column. SVs that do not contain 'END' and 'SVTYPE' entries will be annotated with 'NA.' SVs that are not exonic will be annotated with 'not_exonic.'
+StrVCTVRE can annotate both vcf and bed files. For a vcf record to be annotated by StrVCTVRE, the record must overlap an exon, have 'END' and 'SVTYPE' entries in the INFO column, and SVTYPE must be 'DUP' or 'DEL'. SVs that do not meet these requirements will be annotated with a string describing what they are missing. StrVCTVRE can annotate and output vcf files compressed with bgzip. It uses file extensions to know whether an input or output file should be compressed or not. 
 
-StrVCTVRE can annotate and output vcf files compressed with bgzip. It uses file extensions to know whether an input or output file should be compressed or not.
-
+For a bed file to be annotated by StrVCTVRE it must have no header and match this format:chromosome[tab]start[tab]end[tab]svtype. See below for an example file. 
+```
+chr1  123456  234567  DEL
+chr2  345678  456789  DUP
+```
+If you have any questions that aren't answered here, please submit a new issue.
