@@ -30,8 +30,6 @@ parser.add_argument('-p','--phyloP',help='phyloP file path, defaults to \'data/h
                     metavar = 'path/to/hg38.phyloP100way.bw',dest='phylopPath')
 #parser.add_argument('-a','--assembly',help='Genome assembly, either GRCh38 or GRCh37',choices=['GRCh37','GRCh38'])
 args = parser.parse_args()
-#args = parser.parse_args('-i /data/andrewsharo-S/thesis/Aim1/test.vcf -o /data/andrewsharo-S/thesis/Aim1/testAnnotated.vcf -p /data/andrewsharo-S/thesis/Aim1/hg38.phyloP100way.bw -f vcf'.split())
-#args = parser.parse_args('-i /data/andrewsharo-S/thesis/Aim1/test.bed -o /data/andrewsharo-S/thesis/Aim1/testAnnotated.bed -p /data/andrewsharo-S/thesis/Aim1/hg38.phyloP100way.bw -f bed'.split())
 
 
 # Create temporary directory to store files created, deleted after finished running
@@ -111,11 +109,6 @@ df['DEL'] = df['svtype'] == 'DEL'
 
 # Determine how many exons overlap each variant
 
-# In[28]:
-
-df
-
-
 # In[29]:
 
 print('\nidentifying exonic deletions and duplications...\n')
@@ -140,11 +133,6 @@ validExon = out.set_index('OldID').copy()
 validExon['validExon'] = True
 # only annotate vars less than 3Mb
 out = out[out['length'] < 3000000]
-
-
-# In[31]:
-
-validExon
 
 
 # In[32]:
