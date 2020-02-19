@@ -1,7 +1,7 @@
 # StrVCTVRE_beta
 Early Release version of StrVCTVRE
 
-## To run StrVCTVRE, following these steps:
+## To run StrVCTVRE, follow these steps:
 
 ### 1. Download and install Python (if not done already)
 I recommend [installing python through Conda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/)
@@ -31,7 +31,7 @@ conda install -c bioconda pybedtools
 and similarly for cyvcf and pybigwig.
 
 ### 4. Download StrVCTVRE
-Linux users should [download StrVCTVRE tarball](https://github.com/andrewSharo/StrVCTVRE_beta/archive/v.0.1.tar.gz). Other users should download [StrVCTVRE zip file for Windows or Mac](https://github.com/andrewSharo/StrVCTVRE_beta/archive/v.0.1.zip). 
+Linux users should [download StrVCTVRE tarball](https://github.com/andrewSharo/StrVCTVRE_beta/archive/v.0.2.tar.gz). Other users should download [StrVCTVRE zip file for Windows or Mac](https://github.com/andrewSharo/StrVCTVRE_beta/archive/v.0.2.zip). 
 
 ### 5. Uncompress StrVCTVRE
 Linux users should run tar -xzf \[filename.tar.gz\]. Windows and Mac users should extract the files from the .zip file. 
