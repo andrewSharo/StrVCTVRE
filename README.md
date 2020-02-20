@@ -28,7 +28,7 @@ pybedtools is distributed through bioconda, so it can be downloaded and install 
 ```
 conda install -c bioconda pybedtools
 ```
-and similarly for cyvcf and pybigwig.
+and similarly for cyvcf2 and pybigwig.
 
 ### 4. Download StrVCTVRE
 Linux users should download the [StrVCTVRE tarball](https://github.com/andrewSharo/StrVCTVRE/archive/v.1.1.tar.gz). Other users should download the [StrVCTVRE zip file for Windows or Mac](https://github.com/andrewSharo/StrVCTVRE/archive/v.1.1.zip). 
