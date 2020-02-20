@@ -43,7 +43,7 @@ To test that StrVCTVRE is annotating correctly, change your current working dire
 ```
 python test_StrVCTVRE.py 
 ```
-Note that you will need to use the -p flag if your phyloP file is not in 'data' folder (see details below). For example, you might run
+Note that you will need to use the -p flag to provide the path to hg38.phyloP100way.bw if it is not in 'data' folder (see details below). For example, you might run
 ```
 python test_StrVCTVRE.py -p /home/conservation/hg38.phyloP100way.bw
 ```
