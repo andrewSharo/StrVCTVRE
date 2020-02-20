@@ -38,7 +38,17 @@ Linux users should run tar -xzf \[filename.tar.gz\]. Windows and Mac users shoul
 
 Inside the uncompressed folder, you will find several files and a folder called 'data'. Please move the 9.2GB hg38.phyloP100way.bw file to the 'data' folder. If this is not possible, you will need to provide the path to this file when running StrVCTVRE (see below).
 
-### 6. Run StrVCTVRE
+### 6. Test StrVCTVRE
+To test that StrVCTVRE is annotating correctly, change your current working directory to the uncompressed folder that contains test_StrVCTVRE.py and run 
+```
+python test_StrVCTVRE.py 
+```
+Note that you will need to use the -p flag if your phyloP file is not in 'data' folder (see details below). For example, you might run
+```
+python test_StrVCTVRE.py -p /home/conservation/hg38.phyloP100way.bw
+```
+If this function prints "SUCCESS" then your copy of StrVCTVRE is working correctly. You may disregard warnings. If the function prints "ERROR" then please [raise a new issue](https://github.com/andrewSharo/StrVCTVRE/issues)
+### 7. Run StrVCTVRE
 To run StrVCTVRE, change your working directory to the uncompressed folder containing StrVCTVRE.py, and run 
 ```
 python StrVCTVRE.py -i /path/to/input/file -o /path/to/output/file [-f {vcf,bed}] [-p path/to/hg38.phyloP100way.bw]
@@ -58,7 +68,7 @@ A user who wants to annotate a bed file and who moved hg38.phyloP100way.bw to th
 python StrVCTVRE.py -i /home/user/patient1.bed -o /home/user/patient1_annotated.bed -f bed 
 ```
 
-### 7. Other notes
+### 8. Other notes
 StrVCTVRE can annotate both vcf and bed files. For a vcf record to be annotated by StrVCTVRE, the record must overlap an exon, have 'END' and 'SVTYPE' entries in the INFO column, and SVTYPE must be 'DUP' or 'DEL'. SVs that do not meet these requirements will be annotated with a string describing what they are missing. StrVCTVRE can annotate and output vcf files compressed with bgzip. It uses file extensions to know whether an input or output file should be compressed or not. 
 
 For a bed file to be annotated by StrVCTVRE it must have no header and match this format:chromosome[tab]start[tab]end[tab]svtype. See below for an example file. 
