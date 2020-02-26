@@ -28,7 +28,7 @@ pybedtools is distributed through bioconda, so it can be downloaded and install 
 ```
 conda install -c bioconda pybedtools
 ```
-and similarly for cyvcf and pybigwig.
+and similarly for cyvcf2 and pybigwig.
 
 ### 4. Download StrVCTVRE
 Linux users should download the [StrVCTVRE tarball](https://github.com/andrewSharo/StrVCTVRE/archive/v.1.1.tar.gz). Other users should download the [StrVCTVRE zip file for Windows or Mac](https://github.com/andrewSharo/StrVCTVRE/archive/v.1.1.zip). 
@@ -43,7 +43,7 @@ To test that StrVCTVRE is annotating correctly, change your current working dire
 ```
 python test_StrVCTVRE.py 
 ```
-Note that you will need to use the -p flag if your phyloP file is not in 'data' folder (see details below). For example, you might run
+Note that you will need to use the -p flag to provide the path to hg38.phyloP100way.bw if it is not in 'data' folder (see details below). For example, you might run
 ```
 python test_StrVCTVRE.py -p /home/conservation/hg38.phyloP100way.bw
 ```
