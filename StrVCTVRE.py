@@ -61,6 +61,14 @@ else:
     
 
 
+# Check bed file input has SVTYPE, an easy thing to forget
+
+# In[ ]:
+
+if df['svtype'].isnull().all() & (args.formatIn == 'bed'):
+    sys.exit('ERROR: likely missing SVTYPE column from bed file')
+
+
 # Change formatting, keep only dels and dups
 
 # In[27]:
