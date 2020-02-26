@@ -71,7 +71,7 @@ print('\nformatting VCF data...\n')
 df['OldID'] = pd.Series(df.index.values)
 
 # check that the chroms all have chr in front
-if sum(df['chrom'].str.startswith('chr',na=False))/df.shape[0] < 0.5:
+if sum(df['chrom'].astype(str).str.startswith('chr',na=False))/df.shape[0] < 0.5:
     df['chrom'] = 'chr' + df['chrom'].astype(str)
 
 acceptedChroms = ['chr1','chr2','chr3','chr4','chr5','chr6','chr7','chr8','chr9','chr10','chr11','chr12','chr13',
