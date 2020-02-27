@@ -7,7 +7,7 @@ Structural variant impact predictor developed by Andrew Sharo and Steven Brenner
 I recommend [installing python through Conda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/)
 
 ### 2. Download PhyloP conservation scores for human genome 38
-This is a 9.2GB file that is required to run StrVCTVRE. It can be downloaded [here](http://hgdownload.cse.ucsc.edu/goldenpath/hg38/phyloP100way/hg38.phyloP100way.bw). Depending on your connection, it should take about 30 minutes to download.
+This is a 9.2GB file that is required to run StrVCTVRE. It can be downloaded [here](http://hgdownload.cse.ucsc.edu/goldenpath/hg38/phyloP100way/hg38.phyloP100way.bw). Depending on your connection, it should take about 20 minutes to download.
 
 ### 3. Download and install the following packages
 * numpy
