@@ -157,40 +157,49 @@ def annotateSVs(inpath, outpath, phylopPath, tempdir):
     b = a.intersect(cds, wa=True, wb=True).saveas(os.path.join(tempdir,'dfCDSOverlap.bed'))
     cdsOverlap = pd.read_csv(os.path.join(tempdir,'dfCDSOverlap.bed'), sep='\t', header=None, 
                               names=['chrom', 'start', 'stop', 'ID', 'cChrom', 'cStart', 'cStop', 'CDSLength', 'size', 'exonRank', 'strand','gene', 'cdsCount', 'pLI','loeuf'])
+    
+    # use if statement to address possible scenario in which all given variants are in UTR and don't overlap a CDS
+    if cdsOverlap.shape[0] != 0:
+        # apply above functions to the SVs that were previously intersected with coding exons
+        out = cdsOverlap.sort_values('exonRank').groupby(['ID','gene']).apply(cdsRank)
+        out = out.sort_values('exonRank', ascending=False).groupby(['ID','gene']).apply(cdsEnd)
 
+        # get shape, but don't drop duplicates (not in place)
+        out.drop_duplicates(subset='ID').shape[0]
 
-    # apply above functions to the SVs that were previously intersected with coding exons
-    out = cdsOverlap.sort_values('exonRank').groupby(['ID','gene']).apply(cdsRank)
-    out = out.sort_values('exonRank', ascending=False).groupby(['ID','gene']).apply(cdsEnd)
+        # Featurize above information into features normalized by cds length
 
-    # get shape, but don't drop duplicates (not in place)
-    out.drop_duplicates(subset='ID').shape[0]
+        out['cdsFracStart'] = out['early']/out['CDSLength']
+        out['cdsFracEnd'] = out['late']/out['CDSLength']
+        out['cdsFrac'] = (out['late'] - out['early'])/out['CDSLength'] 
 
-    # Featurize above information into features normalized by cds length
+        # This is an experimental feature, which gives the max pLI and loeuf of the genes which are signficantly disrupted by the SV.
 
-    out['cdsFracStart'] = out['early']/out['CDSLength']
-    out['cdsFracEnd'] = out['late']/out['CDSLength']
-    out['cdsFrac'] = (out['late'] - out['early'])/out['CDSLength'] 
+        out['pLI_max25'] = out[(out['cdsFracStart'] == 0) | (out['cdsFrac'] > 0.25)].groupby('ID')['pLI'].transform('max')
+        #out['pLI_max25'].fillna(value=0, inplace=True)
+        out['loeuf_min25']= out[(out['cdsFracStart'] == 0) | (out['cdsFrac'] > 0.25)].groupby('ID')['loeuf'].transform('min')
+        #out['loeuf_min25'].fillna(value=0, inplace=True)
 
-    # This is an experimental feature, which gives the max pLI and loeuf of the genes which are signficantly disrupted by the SV.
+        # but we now need to fill in all the cells with the max loeuf_max25 in their ID
+        out['pLI_max25_ID'] = out.groupby('ID')['pLI_max25'].transform('max')
+        out['loeuf_min25_ID'] = out.groupby('ID')['loeuf_min25'].transform('max')
 
-    out['pLI_max25'] = out[(out['cdsFracStart'] == 0) | (out['cdsFrac'] > 0.25)].groupby('ID')['pLI'].transform('max')
-    #out['pLI_max25'].fillna(value=0, inplace=True)
-    out['loeuf_min25']= out[(out['cdsFracStart'] == 0) | (out['cdsFrac'] > 0.25)].groupby('ID')['loeuf'].transform('min')
-    #out['loeuf_min25'].fillna(value=0, inplace=True)
+        out['cdsFracMax'] = out.groupby('ID')['cdsFrac'].transform('max')
+        out['cdsFracStartMin'] = out.groupby('ID')['cdsFracStart'].transform('min')
+        out['cdsFracEndMax'] = out.groupby('ID')['cdsFracEnd'].transform('max')
 
-    # but we now need to fill in all the cells with the max loeuf_max25 in their ID
-    out['pLI_max25_ID'] = out.groupby('ID')['pLI_max25'].transform('max')
-    out['loeuf_min25_ID'] = out.groupby('ID')['loeuf_min25'].transform('max')
+        out.drop_duplicates(subset='ID', inplace=True)
+        
+        final = df.merge(out[['ID', 'cdsFracStartMin', 'cdsFracEndMax', 'cdsFracMax', 'pLI_max25_ID', 'loeuf_min25_ID']], how='left')
+    else:
+        final = df.copy()
+        
+        final['cdsFracStartMin'] = float('NaN')
+        final['cdsFracEndMax'] = float('NaN')
+        final['cdsFracMax'] = float('NaN')
+        final['pLI_max25_ID'] = float('NaN')
+        final['loeuf_min25_ID'] = float('NaN')
 
-    out['cdsFracMax'] = out.groupby('ID')['cdsFrac'].transform('max')
-    out['cdsFracStartMin'] = out.groupby('ID')['cdsFracStart'].transform('min')
-    out['cdsFracEndMax'] = out.groupby('ID')['cdsFracEnd'].transform('max')
-
-    out.columns
-
-    out.drop_duplicates(subset='ID', inplace=True)
-    final = df.merge(out[['ID', 'cdsFracStartMin', 'cdsFracEndMax', 'cdsFracMax', 'pLI_max25_ID', 'loeuf_min25_ID']], how='left')
 
     final['cdsFracStartMin'].fillna(value=2, inplace=True)
     final['cdsFracEndMax'].fillna(value=-1, inplace=True)
