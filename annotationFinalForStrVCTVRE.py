@@ -217,10 +217,29 @@ def annotateSVs(inpath, outpath, phylopPath, tempdir):
                               names=['chrom', 'start', 'stop', 'ID', 'uChrom', 'uStart', 'uStop', 'avgUsage', 'avgExp'])
     out = usageOverlap.groupby('ID').apply(topUsage,n=size)
     out.drop_duplicates(subset='ID', inplace=True)
-
+    
+    if out.shape[0] == 0: 
+        # try looking for features that are nearby, using bedtools window, and window size of 1000
+        b = a.window(usage, w=1000).saveas(os.path.join(tempdir,'dfUsageOverlap.bed'))
+        usageOverlap = pd.read_csv(os.path.join(tempdir,'dfUsageOverlap.bed'), sep='\t', header=None, 
+                              names=['chrom', 'start', 'stop', 'ID', 'uChrom', 'uStart', 'uStop', 'avgUsage', 'avgExp'])
+        pd.read_csv('data/summary_exon_usage_hg38.sorted.bed')
+        out = usageOverlap.groupby('ID').apply(topUsage,n=size)
+        out.drop_duplicates(subset='ID', inplace=True)
+        
+        if out.shape[0] == 0:
+            # if still zero, assume too far from exon to be found, give the median values of all exons 
+            exp = pd.read_csv('data/summary_exon_usage_hg38.sorted.bed', names=['uChrom', 'uStart', 'uStop','Usage','Exp'])
+            usageMed = exp.Usage.median()
+            expMed = exp.Exp.median()
+            out = final[['ID']].copy()
+            out['topUsage'] = usageMed
+            out['topExp'] = expMed
+        
+        
     final2 = final.merge(out[['ID', 'topUsage', 'topExp']], how='left', on='ID')
     final2['topExp'].fillna(value=final2['topExp'].median(), inplace=True)
     final2['topUsage'].fillna(value=final2['topUsage'].median(), inplace=True)
-
+    
     final2.to_csv(outpath,index=False)
 
