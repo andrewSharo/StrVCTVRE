@@ -229,14 +229,13 @@ def annotateSVs(inpath, outpath, phylopPath, tempdir):
         
         if out.shape[0] == 0:
             # if still zero, assume too far from exon to be found, give the median values of all exons 
-            exp = pd.read_csv('data/summary_exon_usage_hg38.sorted.bed', names=['uChrom', 'uStart', 'uStop','Usage','Exp'])
+            exp = pd.read_csv('data/summary_exon_usage_hg38.sorted.bed', names=['uChrom', 'uStart', 'uStop','Usage','Exp'],sep='\t')
             usageMed = exp.Usage.median()
             expMed = exp.Exp.median()
             out = final[['ID']].copy()
             out['topUsage'] = usageMed
             out['topExp'] = expMed
-        
-        
+            
     final2 = final.merge(out[['ID', 'topUsage', 'topExp']], how='left', on='ID')
     final2['topExp'].fillna(value=final2['topExp'].median(), inplace=True)
     final2['topUsage'].fillna(value=final2['topUsage'].median(), inplace=True)
