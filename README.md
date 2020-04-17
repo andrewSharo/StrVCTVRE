@@ -69,9 +69,13 @@ python StrVCTVRE.py -i /home/user/patient1.bed -o /home/user/patient1_annotated.
 ```
 
 ### 8. Other notes
-StrVCTVRE can annotate both vcf and bed files. For a vcf record to be annotated by StrVCTVRE, the record must overlap an exon, have 'END' and 'SVTYPE' entries in the INFO column, and SVTYPE must be 'DUP' or 'DEL'. SVs that do not meet these requirements will be annotated with a string describing what they are missing. StrVCTVRE can annotate and output vcf files compressed with bgzip. It uses file extensions to know whether an input or output file should be compressed or not. 
+StrVCTVRE can annotate both vcf and bed files. For a vcf record to be annotated by StrVCTVRE, the record must overlap an exon, have 'END' and 'SVTYPE' entries in the INFO column, and SVTYPE must be 'DUP' or 'DEL'. SVs that do not meet these requirements will be annotated with a string describing what they are missing. Deletions and Duplications larger than 3Mb will be given a score of 1.0 since very few benign SVs are larger than 3Mb. StrVCTVRE can annotate and output vcf files compressed with bgzip. It uses file extensions to know whether an input or output file should be compressed or not. 
 
-For a bed file to be annotated by StrVCTVRE it must have no header and match this format:chromosome[tab]start[tab]end[tab]svtype. See below for an example file. 
+For a bed file to be annotated by StrVCTVRE it must have no header and match this format:
+
+chromosome[tab]start[tab]end[tab]svtype. 
+
+See below for an example file. 
 ```
 chr1  123456  234567  DEL
 chr2  345678  456789  DUP
