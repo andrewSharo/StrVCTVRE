@@ -73,7 +73,7 @@ StrVCTVRE can annotate both vcf and bed files. For a vcf record to be annotated 
 
 For a bed file to be annotated by StrVCTVRE it must have no header and match this format:
 
-chromosome[tab]start[tab]end[tab]svtype. 
+chromosome[tab]start[tab]end[tab]svtype
 
 See below for an example file. 
 ```
