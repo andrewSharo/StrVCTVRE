@@ -1,4 +1,5 @@
-# StrVCTVRE
+![StrVCTVRE logo](images/StrVCTVRE.PNG)
+
 Structural variant impact predictor developed by Andrew Sharo and Steven Brenner at UC Berkeley. StrVCTVRE annotates exonic deletions and duplications with a score from 0 to 1, where higher scores are more likely to be pathogenic. Accepts vcf and bed file input. Manuscript in development. StrVCTVRE stands for <ins>Str</ins>uctural <ins>V</ins>ariant <ins>C</ins>lassifier <ins>T</ins>rained on <ins>V</ins>ariants <ins>R</ins>are and <ins>E</ins>xonic.
 
 ## To run StrVCTVRE, follow these steps:
@@ -31,7 +32,7 @@ conda install -c bioconda pybedtools
 and similarly for cyvcf2 and pybigwig.
 
 ### 4. Download StrVCTVRE
-Linux users should download the [StrVCTVRE tarball](https://github.com/andrewSharo/StrVCTVRE/archive/v.1.4.tar.gz). Other users should download the [StrVCTVRE zip file for Windows or Mac](https://github.com/andrewSharo/StrVCTVRE/archive/v.1.4.zip). 
+Linux users should download the [StrVCTVRE tarball](https://github.com/andrewSharo/StrVCTVRE/archive/v.1.5.tar.gz). Other users should download the [StrVCTVRE zip file for Windows or Mac](https://github.com/andrewSharo/StrVCTVRE/archive/v.1.5.zip). 
 
 ### 5. Uncompress StrVCTVRE
 Linux users should run tar -xzf \[filename.tar.gz\]. Windows and Mac users should extract the files from the .zip file. 
@@ -69,9 +70,13 @@ python StrVCTVRE.py -i /home/user/patient1.bed -o /home/user/patient1_annotated.
 ```
 
 ### 8. Other notes
-StrVCTVRE can annotate both vcf and bed files. For a vcf record to be annotated by StrVCTVRE, the record must overlap an exon, have 'END' and 'SVTYPE' entries in the INFO column, and SVTYPE must be 'DUP' or 'DEL'. SVs that do not meet these requirements will be annotated with a string describing what they are missing. StrVCTVRE can annotate and output vcf files compressed with bgzip. It uses file extensions to know whether an input or output file should be compressed or not. 
+StrVCTVRE can annotate both vcf and bed files. For a vcf record to be annotated by StrVCTVRE, the record must overlap an exon, have 'END' and 'SVTYPE' entries in the INFO column, and SVTYPE must be 'DUP' or 'DEL'. SVs that do not meet these requirements will be annotated with a string describing what they are missing. Deletions and Duplications larger than 3Mb will be given a score of 1.0 since very few benign SVs are larger than 3Mb. StrVCTVRE can annotate and output vcf files compressed with bgzip. It uses file extensions to know whether an input or output file should be compressed or not. 
 
-For a bed file to be annotated by StrVCTVRE it must have no header and match this format:chromosome[tab]start[tab]end[tab]svtype. See below for an example file. 
+For a bed file to be annotated by StrVCTVRE it must have no header and match this format:
+
+chromosome[tab]start[tab]end[tab]svtype
+
+See below for an example file. 
 ```
 chr1  123456  234567  DEL
 chr2  345678  456789  DUP
