@@ -163,7 +163,7 @@ an = pd.read_csv(os.path.join(td,'svsAnnotated.csv'))
 an['path'] = 0
 presentChroms = an['chrom'].value_counts().index.values
 for chrm in presentChroms:
-    rf = load('data/rfTrainedOnAllExcept'+chrm+'.joblib')
+    rf = load('data/rfTrainedAllChromsExcept'+chrm+'.joblib')
     X = an[an['chrom'] == chrm][['DEL','numExonsFinal','phyloP', 'lowestExonRank', 'allSkippable','lowestExonsInGene', 'anyConstExon','pLIMax','loeufMin', 'cdsFracStartMin', 'cdsFracEndMax', 'cdsFracMax', 'pLI_max25_ID', 'loeuf_min25_ID','topExp','topUsage','maxStrength']].copy()
     an.loc[an['chrom'] == chrm,'path'] = rf.predict_proba(X)[:,1]
 
