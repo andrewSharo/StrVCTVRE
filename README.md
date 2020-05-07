@@ -62,7 +62,7 @@ python StrVCTVRE.py -i /home/user/patient1.vcf -o /home/user/patient1_annotated.
 ```
 A user who has hg38.phyloP100way.bw in a different folder might run
 ```
-python StrVCTVRE.py /home/user/patient1.vcf /home/user/patient1_annotated.vcf /home/conservation/hg38.phyloP100way.bw
+python StrVCTVRE.py -i /home/user/patient1.vcf -o /home/user/patient1_annotated.vcf -p /home/conservation/hg38.phyloP100way.bw
 ```
 A user who wants to annotate a bed file and who moved hg38.phyloP100way.bw to the 'data' folder might run
 ```
