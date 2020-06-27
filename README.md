@@ -1,6 +1,6 @@
 ![StrVCTVRE logo](images/StrVCTVRE.PNG)
 
-Structural variant impact predictor developed by Andrew Sharo and Steven Brenner at UC Berkeley. StrVCTVRE annotates exonic deletions and duplications with a score from 0 to 1, where higher scores are more likely to be pathogenic. Accepts vcf and bed file input. Manuscript in development. StrVCTVRE stands for <ins>Str</ins>uctural <ins>V</ins>ariant <ins>C</ins>lassifier <ins>T</ins>rained on <ins>V</ins>ariants <ins>R</ins>are and <ins>E</ins>xonic.
+Structural variant impact predictor developed by Andrew Sharo and Steven Brenner at UC Berkeley. StrVCTVRE annotates exonic deletions and duplications with a score from 0 to 1, where higher scores are more likely to be pathogenic. Accepts vcf and bed file input. StrVCTVRE learns to identify pathogenic variants using a random forest framework trained on data from ClinVar, gnomAD, and a recent great ape sequencing study. StrVCTVRE stands for <ins>Str</ins>uctural <ins>V</ins>ariant <ins>C</ins>lassifier <ins>T</ins>rained on <ins>V</ins>ariants <ins>R</ins>are and <ins>E</ins>xonic.
 
 ### The StrVCTVRE manuscript is available on [bioRxiv](https://www.biorxiv.org/content/10.1101/2020.05.15.097048v2) 
 
