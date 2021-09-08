@@ -1,6 +1,8 @@
 ![StrVCTVRE logo](images/StrVCTVRE.PNG)
 
-Structural variant impact predictor developed by Andrew Sharo and Steven Brenner at UC Berkeley. StrVCTVRE annotates exonic deletions and duplications with a score from 0 to 1, where higher scores are more likely to be pathogenic. Accepts vcf and bed file input. Manuscript in development. StrVCTVRE stands for <ins>Str</ins>uctural <ins>V</ins>ariant <ins>C</ins>lassifier <ins>T</ins>rained on <ins>V</ins>ariants <ins>R</ins>are and <ins>E</ins>xonic.
+Structural variant impact predictor developed by Andrew Sharo and Steven Brenner at UC Berkeley. StrVCTVRE annotates exonic deletions and duplications with a score from 0 to 1, where higher scores are more likely to be pathogenic. Accepts vcf and bed file input. StrVCTVRE learns to identify pathogenic variants using a random forest framework trained on data from ClinVar, gnomAD, and a recent great ape sequencing study. StrVCTVRE stands for <ins>Str</ins>uctural <ins>V</ins>ariant <ins>C</ins>lassifier <ins>T</ins>rained on <ins>V</ins>ariants <ins>R</ins>are and <ins>E</ins>xonic.
+
+### The StrVCTVRE manuscript is available on [bioRxiv](https://www.biorxiv.org/content/10.1101/2020.05.15.097048v2) 
 
 ## To run StrVCTVRE, follow these steps:
 
@@ -32,7 +34,7 @@ conda install -c bioconda pybedtools
 and similarly for cyvcf2 and pybigwig.
 
 ### 4. Download StrVCTVRE
-Linux users should download the [StrVCTVRE tarball](https://github.com/andrewSharo/StrVCTVRE/archive/v.1.5.tar.gz). Other users should download the [StrVCTVRE zip file for Windows or Mac](https://github.com/andrewSharo/StrVCTVRE/archive/v.1.5.zip). 
+Linux users should download the [StrVCTVRE tarball](https://github.com/andrewSharo/StrVCTVRE/archive/v.1.6.tar.gz). Other users should download the [StrVCTVRE zip file for Windows or Mac](https://github.com/andrewSharo/StrVCTVRE/archive/v.1.6.zip). 
 
 ### 5. Uncompress StrVCTVRE
 Linux users should run tar -xzf \[filename.tar.gz\]. Windows and Mac users should extract the files from the .zip file. 
@@ -62,7 +64,7 @@ python StrVCTVRE.py -i /home/user/patient1.vcf -o /home/user/patient1_annotated.
 ```
 A user who has hg38.phyloP100way.bw in a different folder might run
 ```
-python StrVCTVRE.py /home/user/patient1.vcf /home/user/patient1_annotated.vcf /home/conservation/hg38.phyloP100way.bw
+python StrVCTVRE.py -i /home/user/patient1.vcf -o /home/user/patient1_annotated.vcf -p /home/conservation/hg38.phyloP100way.bw
 ```
 A user who wants to annotate a bed file and who moved hg38.phyloP100way.bw to the 'data' folder might run
 ```
