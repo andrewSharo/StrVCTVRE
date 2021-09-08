@@ -1,10 +1,10 @@
 
 # coding: utf-8
 
-# # This notebook annotates input file SVs using StrVCTVRE
+# # This notebook tests if StrVCTVRE is annotating correctly
 # For a vcf entry to be annotated, it must have an END tag and a SVTYPE tag. Only exonic deletions and duplications will be annotated. Must be in GRCh38. Only annotates autosomes, X, and Y.
 
-# In[155]:
+# In[19]:
 
 # may need to put each of these in it's own statement, throw an error if fails
 import sys
@@ -19,38 +19,38 @@ import argparse
 import tempfile
 import shutil
 import os
+import filecmp
 
 
-# In[156]:
+# In[5]:
 
-parser = argparse.ArgumentParser(description='Annotate the pathogenicity of exonic deletions and duplications in GRCh38.')
-parser.add_argument('-i','--input',help='Input file path',required=True,metavar = '/path/to/input/file',dest='pathIn')
-parser.add_argument('-o','--output',help='Output file path',required=True,metavar = '/path/to/output/file',dest='pathOut')
-parser.add_argument('-f','--format',help='Input file format, either vcf or bed, defaults to vcf when not provided',choices=['vcf','bed'],dest='formatIn',default='vcf')
+parser = argparse.ArgumentParser(description='Test if StrVCTVRE is annotating correctly.')
+#parser.add_argument('-i','--input',help='Input file path',required=True,metavar = '/path/to/input/file',dest='pathIn')
+#parser.add_argument('-o','--output',help='Output file path',required=True,metavar = '/path/to/output/file',dest='pathOut')
+#parser.add_argument('-f','--format',help='Input file format, either vcf or bed, defaults to vcf when not provided',choices=['vcf','bed'],dest='formatIn',default='vcf')
 parser.add_argument('-p','--phyloP',help='phyloP file path, defaults to \'data/hg38.phyloP100way.bw\' when not provided',default='data/hg38.phyloP100way.bw',
                     metavar = 'path/to/hg38.phyloP100way.bw',dest='phylopPath')
-parser.add_argument('-a','--assembly',help='Genome assembly of input, either GRCh38 or GRCh37',choices=['GRCh37','GRCh38'],default='GRCh38',dest='assembly')
-parser.add_argument('-l','--liftover',help='Liftover executable path, required if assembly is GRCh37',required=False,metavar='/path/to/liftover',dest='pathLiftover')
-# for testing
-# args = parser.parse_args(['-i','/test/path/sept','-o','/test/output/sept'])
+#parser.add_argument('-a','--assembly',help='Genome assembly, either GRCh38 or GRCh37',choices=['GRCh37','GRCh38'])
+parser.add_argument('-l','--liftover',help='Liftover executable path, required if assembly is GRCh37',required=True,metavar='/path/to/liftover',dest='pathLiftover')
 
-# for production
 args = parser.parse_args()
+args.formatIn = 'vcf'
+args.pathIn = 'data/test.GRCh37.vcf.gz'
+args.pathOut = 'data/test.GRCh37.annotated.vcf.gz'
+args.assembly = 'GRCh37'
 
-if args.assembly == 'GRCh37' and args.pathLiftover is None:
-    parser.error("--assembly requires --liftover")
 
 
 # Create temporary directory to store files created, deleted after finished running
 
-# In[157]:
+# In[7]:
 
 td = tempfile.mkdtemp(prefix='StrVCTVRE.',suffix='.tmp')
 
 
 # read VCF or BED into one large csv file
 
-# In[158]:
+# In[8]:
 
 # if VCF
 if args.formatIn == 'vcf':
@@ -66,19 +66,19 @@ if args.formatIn == 'vcf':
 else:
     print('\nreading BED...\n')
     toDf = []
-    df = pd.read_csv(args.pathIn,sep='\t',names=['chrom','start','end','svtype'],header=None,index_col=False,usecols=[0,1,2,3])
+    df = pd.read_csv(args.pathIn,sep='\t',names=['chrom','start','end','svtype'],header=None)
     
 
 
 # Check bed file input has SVTYPE, an easy thing to forget
 
-# In[159]:
+# In[ ]:
 
 if df['svtype'].isnull().all() & (args.formatIn == 'bed'):
     sys.exit('ERROR: likely missing SVTYPE column from bed file')
 
 
-# In[160]:
+# In[ ]:
 
 print('\nformatting VCF data...\n')
 
@@ -88,7 +88,7 @@ df['OldID'] = pd.Series(df.index.values)
 
 # Confirm correct chromosomes
 
-# In[161]:
+# In[ ]:
 
 # check that the chroms all have chr in front
 if sum(df['chrom'].astype(str).str.startswith('chr',na=False))/df.shape[0] < 0.5:
@@ -104,7 +104,7 @@ validChrom['validChrom'] = True
 
 # Liftover data to hg38 if needed
 
-# In[162]:
+# In[ ]:
 
 if args.assembly == 'GRCh37':
     df['currentIndex'] = list(df.index.values)
@@ -120,7 +120,7 @@ if args.assembly == 'GRCh37':
 
 # Change formatting, keep only dels and dups
 
-# In[166]:
+# In[9]:
 
 # remove all start and end values that are not numeric
 df = df[pd.to_numeric(df['start'], errors='coerce').notnull()].copy()
@@ -150,7 +150,7 @@ df['DEL'] = df['svtype'] == 'DEL'
 
 # Determine how many exons overlap each variant
 
-# In[167]:
+# In[10]:
 
 print('\nidentifying exonic deletions and duplications...\n')
 
@@ -166,7 +166,7 @@ exonOverlap.drop_duplicates(subset='OldID', inplace=True)
 
 # Drop variants that overlap no exons
 
-# In[168]:
+# In[11]:
 
 out = df.merge(exonOverlap[['numExons','OldID']],how='left',on='OldID')
 out = out[out['numExons'] > 0]
@@ -176,25 +176,25 @@ validExon['validExon'] = True
 out = out[out['length'] < 3000000]
 
 
-# In[169]:
+# In[12]:
 
 out[['chrom','start','end','OldID','DEL']].to_csv(os.path.join(td,'svsForAnnotation.csv'))
 
 
 # Score each variant
 
-# In[170]:
+# In[13]:
 
 print('\nscoring exonic deletions and duplications...\n')
 annotationFinalForStrVCTVRE.annotateSVs(os.path.join(td,'svsForAnnotation.csv'), os.path.join(td,'svsAnnotated.csv'), args.phylopPath, td)
 
 
-# In[171]:
+# In[14]:
 
 an = pd.read_csv(os.path.join(td,'svsAnnotated.csv'))
 
 
-# In[172]:
+# In[15]:
 
 # annotate SVs on each chromosome, using random forest trained on all other chroms, to avoid overfitting
 an['path'] = 0
@@ -205,14 +205,14 @@ for chrm in presentChroms:
     an.loc[an['chrom'] == chrm,'path'] = rf.predict_proba(X)[:,1]
 
 
-# In[173]:
+# In[16]:
 
 an.set_index('OldID', inplace=True)
 
 
 # Annotate vcf with StrVCTVRE pathogenicity scores
 
-# In[174]:
+# In[17]:
 
 if args.formatIn == 'vcf':
     print('\nwriting annotated VCF...\n')
@@ -282,14 +282,17 @@ else:
 
 # delete temporary files
 
-# In[175]:
+# In[18]:
 
 shutil.rmtree(td)
 
 
-# In[176]:
+# In[23]:
 
-print('\nFinished\n')
+if filecmp.cmp(args.pathOut,'data/test.GRCh37.correctAnnotation.vcf.gz',shallow=False):
+    print("SUCCESS: StrVCTVRE is running correctly\n")
+else:
+    print("ERROR: StrVCTVRE is not running correctly\n")
 
 
 # In[ ]:
