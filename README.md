@@ -100,4 +100,4 @@ See below for an example file.
 chr1  123456  234567  DEL
 chr2  345678  456789  DUP
 ```
-If you have any questions that aren't answered here, please submit a new issue.
+If you have any questions that aren't answered here, please [raise a new issue](https://github.com/andrewSharo/StrVCTVRE/issues)
