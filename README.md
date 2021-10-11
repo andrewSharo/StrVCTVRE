@@ -9,10 +9,35 @@ Structural variant impact predictor developed by Andrew Sharo, Zhiqiang Hu, and 
 ### 1. Download and install Python (if not done already)
 I recommend [installing python through Conda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/)
 
-### 2. Download PhyloP conservation scores for human genome 38
+### 2. Clone github StrVCTVRE repository
+If [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) is installed on your system, run
+```
+git clone https://github.com/andrewSharo/StrVCTVRE
+```
+which will copy the StrVCTVRE files onto your system. Continue to step 3.
+
+If you cannot clone the github repository, Linux users should download the [StrVCTVRE tarball](https://github.com/andrewSharo/StrVCTVRE/archive/v.1.6.tar.gz). Other users should download the [StrVCTVRE zip file for Windows or Mac](https://github.com/andrewSharo/StrVCTVRE/archive/v.1.6.zip). 
+
+To extract the files, linux users should run tar -xzf \[filename.tar.gz\]. Windows and Mac users should extract the files from the .zip file. 
+
+### 3. Download PhyloP conservation scores for human genome 38
 This is a 9.2GB file that is required to run StrVCTVRE. It can be downloaded [here](http://hgdownload.cse.ucsc.edu/goldenpath/hg38/phyloP100way/hg38.phyloP100way.bw). Depending on your connection, it should take about 20 minutes to download.
 
-### 3. Download and install the following packages
+Please move this 9.2GB hg38.phyloP100way.bw file to the 'data' folder inside the cloned StrVCTVRE repository. If this is not possible, you will need to provide the path to this file when running StrVCTVRE (see below).
+
+### 4. Download and install required packages
+If using conda, navigate to the StrVCTVRE folder and run
+```
+conda env create -f environment_py2.7.yml
+```
+which will install all necessary packages in a new conda environment. Next run
+```
+conda activate StrVCTVRE_py_2.7
+```
+to activate this new conda environment. Continue to Step 5.
+
+If you were not able to use the yml file to create a new conda environment, you will need to manually install the following packages:
+
 * numpy
 * pandas
 * joblib
@@ -30,16 +55,8 @@ Some packages are distributed through bioconda, so they can be downloaded and in
 conda install -c bioconda pybedtools cyvcf2 pybigwig
 ```
 
-### 4. Download StrVCTVRE
-Linux users should download the [StrVCTVRE tarball](https://github.com/andrewSharo/StrVCTVRE/archive/v.1.6.tar.gz). Other users should download the [StrVCTVRE zip file for Windows or Mac](https://github.com/andrewSharo/StrVCTVRE/archive/v.1.6.zip). 
-
-### 5. Uncompress StrVCTVRE
-Linux users should run tar -xzf \[filename.tar.gz\]. Windows and Mac users should extract the files from the .zip file. 
-
-Inside the uncompressed folder, you will find several files and a folder called 'data'. Please move the 9.2GB hg38.phyloP100way.bw file to the 'data' folder. If this is not possible, you will need to provide the path to this file when running StrVCTVRE (see below).
-
-### 6. Test StrVCTVRE for GRCh38
-To test that StrVCTVRE is annotating correctly, change your current working directory to the uncompressed folder that contains test_StrVCTVRE.py and run 
+### 5. Test StrVCTVRE for GRCh38
+To test that StrVCTVRE is annotating correctly, change your current working directory to the StrVCTVRE folder that contains test_StrVCTVRE.py and run 
 ```
 python test_StrVCTVRE.py 
 ```
@@ -49,7 +66,7 @@ python test_StrVCTVRE.py -p /home/conservation/hg38.phyloP100way.bw
 ```
 If this function prints "SUCCESS" then your copy of StrVCTVRE is working correctly. You may disregard warnings. If the function prints "ERROR" then please [raise a new issue](https://github.com/andrewSharo/StrVCTVRE/issues)
 
-### 7. Test StrVCTVRE for GRCh37
+### 6. Test StrVCTVRE for GRCh37
 You may skip this section if your structural variants are already in GRCh38.
 
 StrVCTVRE can annotate structural variants in GRCh37. This requires having a functioning copy of the LiftOver software on your system. LiftOver can be downloaded from [the UCSC Genome Browser store](https://genome-store.ucsc.edu/) for free for academic researchers. Once you have installed LiftOver on your system, test StrVCTVRE by running
@@ -58,8 +75,8 @@ python test_StrVCTVRE_GRCh37.py -l /path/to/liftOver
 ```
 If this function prints "SUCCESS" then your copy of StrVCTVRE is ready to annotate GRCh37 structural variants. You may disregard warnings. If the function prints "ERROR" then please [raise a new issue](https://github.com/andrewSharo/StrVCTVRE/issues)
 
-### 8. Run StrVCTVRE for GRCh38
-To run StrVCTVRE, change your working directory to the uncompressed folder containing StrVCTVRE.py, and run 
+### 7. Run StrVCTVRE for GRCh38
+To run StrVCTVRE, change your working directory to the folder containing StrVCTVRE.py, and run 
 ```
 python StrVCTVRE.py -i /path/to/input/file -o /path/to/output/file [-f {vcf,bed}] [-p path/to/hg38.phyloP100way.bw]
 ``` 
@@ -78,7 +95,7 @@ A user who wants to annotate a bed file and who moved hg38.phyloP100way.bw to th
 python StrVCTVRE.py -i /home/user/patient1.bed -o /home/user/patient1_annotated.bed -f bed 
 ```
 
-### 9. Run StrVCTVRE for GRCh37
+### 8. Run StrVCTVRE for GRCh37
 The commands to run StrVCTVRE for GRCh37 are identical to the above commands for GRCh38, except you must explicitly include an argument indicating the assembly is GRCh37, and you must also include the path to the LiftOver executable. For example,
 ```
 python StrVCTVRE.py -i /home/user/patient1.vcf -o /home/user/patient1_annotated.vcf -a GRCh37 -l /path/to/LiftOver
@@ -88,7 +105,7 @@ Although the SVs are in GRCh37, you will still need to download the phyloP hg38.
 python StrVCTVRE.py -i /home/user/patient1.vcf -o /home/user/patient1_annotated.vcf -a GRCh37 -l /path/to/LiftOver -p /home/conservation/hg38.phyloP100way.bw
 ```
 
-### 10. Other notes
+### 9. Other notes
 StrVCTVRE can annotate both vcf and bed files. For a vcf record to be annotated by StrVCTVRE, the record must overlap an exon, have 'END' and 'SVTYPE' entries in the INFO column, and SVTYPE must be 'DUP' or 'DEL'. SVs that do not meet these requirements will be annotated with a string describing what they are missing. Deletions and Duplications larger than 3Mb will be given a score of 1.0 since very few benign SVs are larger than 3Mb. StrVCTVRE can annotate and output vcf files compressed with bgzip. It uses file extensions to know whether an input or output file should be compressed or not. 
 
 For a bed file to be annotated by StrVCTVRE it must have no header and match this format:
