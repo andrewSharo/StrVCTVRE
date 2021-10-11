@@ -80,7 +80,7 @@ if df['svtype'].isnull().all() & (args.formatIn == 'bed'):
 
 # In[160]:
 
-print('\nformatting VCF data...\n')
+print('\nformatting data...\n')
 
 # make old index so we can annotate SVs rapidly at the end
 df['OldID'] = pd.Series(df.index.values)
@@ -164,11 +164,21 @@ exonOverlap['numExons'] = exonOverlap.groupby(by='OldID').chrom.transform('size'
 exonOverlap.drop_duplicates(subset='OldID', inplace=True)
 
 
+# In[ ]:
+
+# To reduce memory usage, delete unused variables
+del exons
+del a
+del b
+
+
 # Drop variants that overlap no exons
 
 # In[168]:
 
 out = df.merge(exonOverlap[['numExons','OldID']],how='left',on='OldID')
+del exonOverlap
+del df
 out = out[out['numExons'] > 0]
 validExon = out.set_index('OldID').copy()
 validExon['validExon'] = True
@@ -179,6 +189,7 @@ out = out[out['length'] < 3000000]
 # In[169]:
 
 out[['chrom','start','end','OldID','DEL']].to_csv(os.path.join(td,'svsForAnnotation.csv'))
+del out
 
 
 # Score each variant
@@ -218,7 +229,7 @@ if args.formatIn == 'vcf':
     print('\nwriting annotated VCF...\n')
 
     vcf = VCF(args.pathIn)
-    vcf.add_info_to_header({'ID':'StrVCTVRE','Description':'pathogenicity score for structural variants','Type':'Float','Number':'1'})
+    vcf.add_info_to_header({'ID':'StrVCTVRE','Description':'pathogenicity score for structural variants','Type':'String','Number':'1'})
 
     w = Writer(args.pathOut,vcf)
 

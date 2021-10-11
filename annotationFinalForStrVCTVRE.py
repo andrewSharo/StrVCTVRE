@@ -83,6 +83,9 @@ def annotateSVs(inpath, outpath, phylopPath, tempdir):
     df[['chrom','start','end','ID']].to_csv(os.path.join(tempdir,'df.bed'),sep='\t', index=False,header=False)
     a = pybedtools.BedTool(os.path.join(tempdir,'df.bed'))
     b = a.intersect(exons, wa=True, wb=True).saveas(os.path.join(tempdir,'dfExonOverlap.bed'))
+    del a
+    del exons
+    del b
     exonOverlap = pd.read_csv(os.path.join(tempdir,'dfExonOverlap.bed'), sep='\t', header=None, 
                               names=['chrom', 'start', 'stop', 'ID', 'eChrom', 'eStart', 'eStop', 'gene', 'exonRank', 'skippable', 'exonsInGene', 'const','pLI','loeuf'])
 
@@ -96,7 +99,7 @@ def annotateSVs(inpath, outpath, phylopPath, tempdir):
 
     exonOverlap.drop_duplicates(subset='ID', inplace=True)
     df = df.merge(exonOverlap[['ID', 'numExonsFinal', 'allSkippable', 'lowestExonRank', 'lowestExonsInGene', 'anyConstExon','pLIMax','loeufMin']], how='left', on='ID')
-
+    del exonOverlap
     # numExons = the total number of exons that an SV overlaps, across all genes
 
     # allSkippable = 1 if all exons overlapped start and end in same phase, 0 otherwise
@@ -130,11 +133,13 @@ def annotateSVs(inpath, outpath, phylopPath, tempdir):
             except:
                 print(df.loc[i,'start'])
                 x.append(np.array([0.5]))
+    del consBW
     x = np.asarray(x)
     # get the mean of the top 100 most conserved positions
     cons = [np.mean(y[np.argsort(y)[-size:]]) for y in x]
+    del x
     df['phyloP'] = pd.Series(cons)
-
+    del cons
     # Add TAD features
 
     tads = pybedtools.BedTool('data/rep12tadsMergedhg38.bed')
@@ -148,7 +153,8 @@ def annotateSVs(inpath, outpath, phylopPath, tempdir):
     tadOverlap.drop_duplicates(subset='ID', inplace=True)
     df = df.merge(tadOverlap[['ID', 'maxStrength']], how='left', on='ID')
     df['maxStrength'].fillna(value=0, inplace=True)
-
+    del tads
+    del tadOverlap
     ## Add amino acid features
 
     cds = pybedtools.BedTool('data/exons_CDS_Chr1-Y.sorted.bed')
@@ -157,7 +163,7 @@ def annotateSVs(inpath, outpath, phylopPath, tempdir):
     b = a.intersect(cds, wa=True, wb=True).saveas(os.path.join(tempdir,'dfCDSOverlap.bed'))
     cdsOverlap = pd.read_csv(os.path.join(tempdir,'dfCDSOverlap.bed'), sep='\t', header=None, 
                               names=['chrom', 'start', 'stop', 'ID', 'cChrom', 'cStart', 'cStop', 'CDSLength', 'size', 'exonRank', 'strand','gene', 'cdsCount', 'pLI','loeuf'])
-    
+    del cds
     # use if statement to address possible scenario in which all given variants are in UTR and don't overlap a CDS
     if cdsOverlap.shape[0] != 0:
         # apply above functions to the SVs that were previously intersected with coding exons
@@ -191,16 +197,17 @@ def annotateSVs(inpath, outpath, phylopPath, tempdir):
         out.drop_duplicates(subset='ID', inplace=True)
         
         final = df.merge(out[['ID', 'cdsFracStartMin', 'cdsFracEndMax', 'cdsFracMax', 'pLI_max25_ID', 'loeuf_min25_ID']], how='left')
+        del out
     else:
         final = df.copy()
-        
+        del df
         final['cdsFracStartMin'] = float('NaN')
         final['cdsFracEndMax'] = float('NaN')
         final['cdsFracMax'] = float('NaN')
         final['pLI_max25_ID'] = float('NaN')
         final['loeuf_min25_ID'] = float('NaN')
 
-
+    del cdsOverlap
     final['cdsFracStartMin'].fillna(value=2, inplace=True)
     final['cdsFracEndMax'].fillna(value=-1, inplace=True)
     final['cdsFracMax'].fillna(value=-1, inplace=True)
@@ -217,6 +224,8 @@ def annotateSVs(inpath, outpath, phylopPath, tempdir):
                               names=['chrom', 'start', 'stop', 'ID', 'uChrom', 'uStart', 'uStop', 'avgUsage', 'avgExp'])
     out = usageOverlap.groupby('ID').apply(topUsage,n=size)
     out.drop_duplicates(subset='ID', inplace=True)
+    del a
+    del b
     
     if out.shape[0] == 0: 
         # try looking for features that are nearby, using bedtools window, and window size of 1000
@@ -237,6 +246,8 @@ def annotateSVs(inpath, outpath, phylopPath, tempdir):
             out['topExp'] = expMed
             
     final2 = final.merge(out[['ID', 'topUsage', 'topExp']], how='left', on='ID')
+    del final
+    del out
     final2['topExp'].fillna(value=final2['topExp'].median(), inplace=True)
     final2['topUsage'].fillna(value=final2['topUsage'].median(), inplace=True)
     
