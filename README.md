@@ -16,7 +16,7 @@ git clone https://github.com/andrewSharo/StrVCTVRE
 ```
 which will copy the StrVCTVRE files onto your system. Continue to step 3.
 
-If you cannot clone the github repository, Linux users should download the [StrVCTVRE tarball](https://github.com/andrewSharo/StrVCTVRE/archive/v.1.6.tar.gz). Other users should download the [StrVCTVRE zip file for Windows or Mac](https://github.com/andrewSharo/StrVCTVRE/archive/v.1.6.zip). 
+If you cannot clone the github repository, Linux users should download the [StrVCTVRE tarball](https://github.com/andrewSharo/StrVCTVRE/archive/v.1.7.tar.gz). Other users should download the [StrVCTVRE zip file for Windows or Mac](https://github.com/andrewSharo/StrVCTVRE/archive/v.1.7.zip). 
 
 To extract the files, linux users should run tar -xzf \[filename.tar.gz\]. Windows and Mac users should extract the files from the .zip file. 
 
