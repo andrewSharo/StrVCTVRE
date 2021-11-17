@@ -23,7 +23,7 @@ import os
 
 # In[156]:
 
-parser = argparse.ArgumentParser(description='Annotate the pathogenicity of exonic deletions and duplications in GRCh38.')
+parser = argparse.ArgumentParser(description='StrVCTVRE: version 1.7\nAuthor: Andrew Sharo (sharo@berkeley.edu)\nAnnotate the pathogenicity of exonic deletions and duplications in GRCh38 (default) or GRCh37.',formatter_class=argparse.RawDescriptionHelpFormatter)
 parser.add_argument('-i','--input',help='Input file path',required=True,metavar = '/path/to/input/file',dest='pathIn')
 parser.add_argument('-o','--output',help='Output file path',required=True,metavar = '/path/to/output/file',dest='pathOut')
 parser.add_argument('-f','--format',help='Input file format, either vcf or bed, defaults to vcf when not provided',choices=['vcf','bed'],dest='formatIn',default='vcf')
