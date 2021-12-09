@@ -174,7 +174,7 @@ del b
 
 # Drop variants that overlap no exons
 
-# In[168]:
+# In[ ]:
 
 out = df.merge(exonOverlap[['numExons','OldID']],how='left',on='OldID')
 del exonOverlap
@@ -185,40 +185,29 @@ validExon['validExon'] = True
 # only annotate vars less than 3Mb
 out = out[out['length'] < 3000000]
 
+# if there are exonic variants, annotate them. Otherwise continue to file output
+if out.shape[0] != 0: 
+    out[['chrom','start','end','OldID','DEL']].to_csv(os.path.join(td,'svsForAnnotation.csv'))
+    del out
 
-# In[169]:
+    # Score each variant
 
-out[['chrom','start','end','OldID','DEL']].to_csv(os.path.join(td,'svsForAnnotation.csv'))
-del out
+    print('\nscoring exonic deletions and duplications...\n')
+    annotationFinalForStrVCTVRE.annotateSVs(os.path.join(td,'svsForAnnotation.csv'), os.path.join(td,'svsAnnotated.csv'), args.phylopPath, td)
 
+    an = pd.read_csv(os.path.join(td,'svsAnnotated.csv'))
 
-# Score each variant
+    # annotate SVs on each chromosome, using random forest trained on all other chroms, to avoid overfitting
+    an['path'] = 0
+    presentChroms = an['chrom'].value_counts().index.values
+    for chrm in presentChroms:
+        rf = load('data/rfTrainedAllChromsExcept'+chrm+'.joblib')
+        X = an[an['chrom'] == chrm][['DEL','numExonsFinal','phyloP', 'lowestExonRank', 'allSkippable','lowestExonsInGene', 'anyConstExon','pLIMax','loeufMin', 'cdsFracStartMin', 'cdsFracEndMax', 'cdsFracMax', 'pLI_max25_ID', 'loeuf_min25_ID','topExp','topUsage','maxStrength']].copy()
+        an.loc[an['chrom'] == chrm,'path'] = rf.predict_proba(X)[:,1]
 
-# In[170]:
-
-print('\nscoring exonic deletions and duplications...\n')
-annotationFinalForStrVCTVRE.annotateSVs(os.path.join(td,'svsForAnnotation.csv'), os.path.join(td,'svsAnnotated.csv'), args.phylopPath, td)
-
-
-# In[171]:
-
-an = pd.read_csv(os.path.join(td,'svsAnnotated.csv'))
-
-
-# In[172]:
-
-# annotate SVs on each chromosome, using random forest trained on all other chroms, to avoid overfitting
-an['path'] = 0
-presentChroms = an['chrom'].value_counts().index.values
-for chrm in presentChroms:
-    rf = load('data/rfTrainedAllChromsExcept'+chrm+'.joblib')
-    X = an[an['chrom'] == chrm][['DEL','numExonsFinal','phyloP', 'lowestExonRank', 'allSkippable','lowestExonsInGene', 'anyConstExon','pLIMax','loeufMin', 'cdsFracStartMin', 'cdsFracEndMax', 'cdsFracMax', 'pLI_max25_ID', 'loeuf_min25_ID','topExp','topUsage','maxStrength']].copy()
-    an.loc[an['chrom'] == chrm,'path'] = rf.predict_proba(X)[:,1]
-
-
-# In[173]:
-
-an.set_index('OldID', inplace=True)
+    an.set_index('OldID', inplace=True)
+else:
+    an = pd.DataFrame()
 
 
 # Annotate vcf with StrVCTVRE pathogenicity scores
