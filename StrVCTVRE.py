@@ -70,6 +70,37 @@ else:
     
 
 
+# If df is empty as this point, typically due to empty bed/vcf file or no SVs in VCF file
+
+# In[ ]:
+
+if df.shape[0] == 0:
+    if args.formatIn == 'vcf':
+        print ("\n !!!!!!! StrVCTVRE could not detect any SVs in your VCF. Either VCF is empty or END/SVTYPE is missing from all variants.\n")
+        vcf = VCF(args.pathIn)
+        vcf.add_info_to_header({'ID':'StrVCTVRE','Description':'pathogenicity score for structural variants','Type':'String','Number':'1'})
+        w = Writer(args.pathOut,vcf)
+        for var in vcf:
+            w.write_record(var)
+        w.close();
+        vcf.close()
+        shutil.rmtree(td)
+        print('\nFinished WITH ERRROS\n')
+        sys.exit()
+
+    if args.formatIn == 'bed':
+        print ("\n !!!!!!! StrVCTVRE could not detect any SVs in your BED file. Check if BED file is blank.\n")
+        f = open(args.pathIn)
+        outf = open(args.pathOut,'w')
+        for row in [x.strip() for x in f.readlines()]:
+            outf.write(row + '\n')
+        f.close()
+        outf.close();
+        shutil.rmtree(td)
+        print('\nFinished WITH ERRROS\n')
+        sys.exit()
+
+
 # Check bed file input has SVTYPE, an easy thing to forget
 
 # In[159]:
