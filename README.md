@@ -34,7 +34,7 @@ which will install all necessary packages in a new conda environment. Next run
 ```
 conda activate StrVCTVRE_py_2.7
 ```
-to activate this new conda environment. Continue to Step 5.
+which will activate this new conda environment. If this is successful, continue to Step 5.
 
 If you were not able to use the yml file to create a new conda environment, you will need to manually install the following packages:
 
