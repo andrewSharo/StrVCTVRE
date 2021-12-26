@@ -69,7 +69,7 @@ If this function prints "SUCCESS" then your copy of StrVCTVRE is working correct
 ### 6. Test StrVCTVRE for GRCh37
 You may skip this section if your structural variants are already in GRCh38.
 
-StrVCTVRE can annotate structural variants in GRCh37. This requires having a functioning copy of the LiftOver software on your system. LiftOver can be downloaded from [the UCSC Genome Browser store](https://genome-store.ucsc.edu/) for free for academic researchers. Once you have installed LiftOver on your system, test StrVCTVRE by running
+StrVCTVRE can annotate structural variants in GRCh37. This requires having a functioning copy of the LiftOver software on your system. LiftOver can be downloaded from [the UCSC Genome Browser store](https://genome-store.ucsc.edu/) for free for academic researchers. You do not need to download any liftOver chain.gz files, as they are already included in the StrVCTVRE repository. Once you have downloaded LiftOver onto your system, test StrVCTVRE by running
 ```
 python test_StrVCTVRE_GRCh37.py -l /path/to/liftOver 
 ```
