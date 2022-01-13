@@ -1,4 +1,4 @@
-![StrVCTVRE logo](images/LogoRedVs.PNG)
+![StrVCTVRE logo](images/StrVCTVRELogoRandom.PNG)
 
 Structural variant impact predictor developed by Andrew Sharo, Zhiqiang Hu, and Steven Brenner at UC Berkeley and Shamil R. Sunyaev at Harvard Medical School. StrVCTVRE annotates exonic deletions and duplications with a score from 0 to 1, where higher scores are more likely to be pathogenic. Accepts vcf and bed file input in both GRCh38 and GRCh37. StrVCTVRE learns to identify pathogenic variants using a random forest framework trained on data from ClinVar, gnomAD, and a recent great ape sequencing study. StrVCTVRE stands for <ins>Str</ins>uctural <ins>V</ins>ariant <ins>C</ins>lassifier <ins>T</ins>rained on <ins>V</ins>ariants <ins>R</ins>are and <ins>E</ins>xonic.
 
