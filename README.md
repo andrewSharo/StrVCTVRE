@@ -4,7 +4,7 @@ Structural variant impact predictor developed by Andrew Sharo, Zhiqiang Hu, and 
 
 ### StrVCTVRE is now published in the [American Journal of Human Genetics](https://doi.org/10.1016/j.ajhg.2021.12.007) 
 
-### \*\*New\*\*: Visit our [Web Server](strvctvre.berkeley.edu) to annotate vcf or bed files with StrVCTVRE scores, or query a single SV
+### \*\*New\*\*: Visit our [Web Server](https://strvctvre.berkeley.edu) to annotate vcf or bed files with StrVCTVRE scores, or query a single SV
 
 ## To run StrVCTVRE, follow these steps:
 
