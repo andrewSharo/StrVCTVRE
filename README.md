@@ -120,3 +120,9 @@ chr1  123456  234567  DEL
 chr2  345678  456789  DUP
 ```
 If you have any questions that aren't answered here, please [raise a new issue](https://github.com/andrewSharo/StrVCTVRE/issues)
+
+## Citation
+If you use StrVCTRE in your work, please cite:
+
+Sharo AG, Hu Z, Sunyaev SR, Brenner SE. 2022. StrVCTVRE: A supervised learning method to predict the pathogenicity of human genome structural variants. *The American Journal of Human Genetics 109*:195-209. doi:[10.1016/j.ajhg.2021.12.007](https://doi.org/10.1016/j.ajhg.2021.12.007)
+
