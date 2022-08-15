@@ -23,7 +23,7 @@ If you cannot clone the github repository, Linux users should download the [StrV
 To extract the files, linux users should run tar -xzf \[filename.tar.gz\]. Windows and Mac users should extract the files from the .zip file. 
 
 ### 3. Download PhyloP conservation scores for human genome 38
-This is a 9.2GB file that is required to run StrVCTVRE. It can be downloaded [here](http://hgdownload.cse.ucsc.edu/goldenpath/hg38/phyloP100way/hg38.phyloP100way.bw). Depending on your connection, it should take about 20 minutes to download.
+This is a 9.2GB file that is required to run StrVCTVRE. It can be downloaded [here](http://hgdownload.cse.ucsc.edu/goldenpath/hg38/phyloP100way/hg38.phyloP100way.bw). Depending on your connection, it should take just a couple of minutes to download.
 
 Please move this 9.2GB hg38.phyloP100way.bw file to the 'data' folder inside the cloned StrVCTVRE repository. If this is not possible, you will need to provide the path to this file when running StrVCTVRE (see below).
 
