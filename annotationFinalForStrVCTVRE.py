@@ -134,7 +134,7 @@ def annotateSVs(inpath, outpath, phylopPath, tempdir):
                 print(df.loc[i,'start'])
                 x.append(np.array([0.5]))
     del consBW
-    x = np.asarray(x)
+    # x = np.asarray(x)
     # get the mean of the top 100 most conserved positions
     cons = [np.mean(y[np.argsort(y)[-size:]]) for y in x]
     del x
@@ -168,6 +168,7 @@ def annotateSVs(inpath, outpath, phylopPath, tempdir):
     if cdsOverlap.shape[0] != 0:
         # apply above functions to the SVs that were previously intersected with coding exons
         out = cdsOverlap.sort_values('exonRank').groupby(['ID','gene']).apply(cdsRank)
+        out.reset_index(drop=True, inplace=True)
         out = out.sort_values('exonRank', ascending=False).groupby(['ID','gene']).apply(cdsEnd)
 
         # get shape, but don't drop duplicates (not in place)
@@ -180,20 +181,25 @@ def annotateSVs(inpath, outpath, phylopPath, tempdir):
         out['cdsFrac'] = (out['late'] - out['early'])/out['CDSLength'] 
 
         # This is an experimental feature, which gives the max pLI and loeuf of the genes which are signficantly disrupted by the SV.
-
+        out.reset_index(drop=True, inplace=True)
         out['pLI_max25'] = out[(out['cdsFracStart'] == 0) | (out['cdsFrac'] > 0.25)].groupby('ID')['pLI'].transform('max')
         #out['pLI_max25'].fillna(value=0, inplace=True)
+        out.reset_index(drop=True, inplace=True)
         out['loeuf_min25']= out[(out['cdsFracStart'] == 0) | (out['cdsFrac'] > 0.25)].groupby('ID')['loeuf'].transform('min')
+        out.reset_index(drop=True, inplace=True)
         #out['loeuf_min25'].fillna(value=0, inplace=True)
 
         # but we now need to fill in all the cells with the max loeuf_max25 in their ID
         out['pLI_max25_ID'] = out.groupby('ID')['pLI_max25'].transform('max')
+        out.reset_index(drop=True, inplace=True)
         out['loeuf_min25_ID'] = out.groupby('ID')['loeuf_min25'].transform('max')
-
+        out.reset_index(drop=True, inplace=True)
         out['cdsFracMax'] = out.groupby('ID')['cdsFrac'].transform('max')
+        out.reset_index(drop=True, inplace=True)
         out['cdsFracStartMin'] = out.groupby('ID')['cdsFracStart'].transform('min')
+        out.reset_index(drop=True, inplace=True)
         out['cdsFracEndMax'] = out.groupby('ID')['cdsFracEnd'].transform('max')
-
+        out.reset_index(drop=True, inplace=True)
         out.drop_duplicates(subset='ID', inplace=True)
         
         final = df.merge(out[['ID', 'cdsFracStartMin', 'cdsFracEndMax', 'cdsFracMax', 'pLI_max25_ID', 'loeuf_min25_ID']], how='left')
@@ -244,7 +250,8 @@ def annotateSVs(inpath, outpath, phylopPath, tempdir):
             out = final[['ID']].copy()
             out['topUsage'] = usageMed
             out['topExp'] = expMed
-            
+
+    out.reset_index(drop=True, inplace=True)
     final2 = final.merge(out[['ID', 'topUsage', 'topExp']], how='left', on='ID')
     del final
     del out
