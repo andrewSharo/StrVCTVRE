@@ -8,17 +8,17 @@ Structural variant impact predictor developed by Andrew Sharo, Zhiqiang Hu, and 
 
 ## To run StrVCTVRE, follow these steps:
 
-### 1. Download and install Python (if not done already)
+### 1. Download and install Python 3 (if not done already)
 I recommend [installing python through Conda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/)
 
 ### 2. Clone github StrVCTVRE repository
 If [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) is installed on your system, run
 ```
-git clone https://github.com/andrewSharo/StrVCTVRE
+git clone --depth 1 https://github.com/andrewSharo/StrVCTVRE
 ```
 which will copy the StrVCTVRE files onto your system. Continue to step 3.
 
-If you cannot clone the github repository, Linux users should download the [StrVCTVRE tarball](https://github.com/andrewSharo/StrVCTVRE/archive/v.1.9.tar.gz). Other users should download the [StrVCTVRE zip file for Windows or Mac](https://github.com/andrewSharo/StrVCTVRE/archive/v.1.9.zip). 
+If you cannot clone the github repository, Linux users should download the [StrVCTVRE tarball](https://github.com/andrewSharo/StrVCTVRE/archive/v.1.10.tar.gz). Other users should download the [StrVCTVRE zip file for Windows or Mac](https://github.com/andrewSharo/StrVCTVRE/archive/v.1.10.zip). 
 
 To extract the files, linux users should run tar -xzf \[filename.tar.gz\]. Windows and Mac users should extract the files from the .zip file. 
 
@@ -28,13 +28,13 @@ This is a 9.2GB file that is required to run StrVCTVRE. It can be downloaded by 
 Please move this 9.2GB hg38.phyloP100way.bw file to the 'data' folder inside the cloned StrVCTVRE repository. If this is not possible, you will need to provide the path to this file when running StrVCTVRE (see below).
 
 ### 4. Download and install required packages
-If using conda, navigate to the StrVCTVRE folder and run
+If using conda, navigate into the StrVCTVRE folder and run
 ```
-conda env create -f environment_py2.7.yml
+conda env create -f environment_py3.yml
 ```
 which will install all necessary packages in a new conda environment. Next run
 ```
-conda activate StrVCTVRE_py_2.7
+conda activate StrVCTVRE_py_3
 ```
 which will activate this new conda environment. If this is successful, continue to Step 5.
 
