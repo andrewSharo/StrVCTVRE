@@ -4,7 +4,8 @@
 # # This notebook annotates input file SVs using StrVCTVRE
 # For a vcf entry to be annotated, it must have an END tag and a SVTYPE tag. Only exonic deletions and duplications will be annotated. Must be in GRCh38. Only annotates autosomes, X, and Y.
 
-# In[155]:
+# In[1]:
+
 
 # may need to put each of these in it's own statement, throw an error if fails
 import sys
@@ -23,7 +24,8 @@ import os
 
 # In[156]:
 
-parser = argparse.ArgumentParser(description='StrVCTVRE: version 1.7\nAuthor: Andrew Sharo (sharo@berkeley.edu)\nAnnotate the pathogenicity of exonic deletions and duplications in GRCh38 (default) or GRCh37.',formatter_class=argparse.RawDescriptionHelpFormatter)
+
+parser = argparse.ArgumentParser(description='StrVCTVRE: version 1.8\nAuthor: Andrew Sharo (sharo@berkeley.edu)\nAnnotate the pathogenicity of exonic deletions and duplications in GRCh38 (default) or GRCh37.',formatter_class=argparse.RawDescriptionHelpFormatter)
 parser.add_argument('-i','--input',help='Input file path',required=True,metavar = '/path/to/input/file',dest='pathIn')
 parser.add_argument('-o','--output',help='Output file path',required=True,metavar = '/path/to/output/file',dest='pathOut')
 parser.add_argument('-f','--format',help='Input file format, either vcf or bed, defaults to vcf when not provided',choices=['vcf','bed'],dest='formatIn',default='vcf')
@@ -38,12 +40,13 @@ parser.add_argument('-l','--liftover',help='Liftover executable path, required i
 args = parser.parse_args()
 
 if args.assembly == 'GRCh37' and args.pathLiftover is None:
-    parser.error("--assembly requires --liftover")
+    parser.error("--assembly GRCh37 requires --liftover")
 
 
 # Create temporary directory to store files created, deleted after finished running
 
 # In[157]:
+
 
 td = tempfile.mkdtemp(prefix='StrVCTVRE.',suffix='.tmp')
 
@@ -51,6 +54,7 @@ td = tempfile.mkdtemp(prefix='StrVCTVRE.',suffix='.tmp')
 # read VCF or BED into one large csv file
 
 # In[158]:
+
 
 # if VCF
 if args.formatIn == 'vcf':
@@ -73,6 +77,7 @@ else:
 # If df is empty as this point, typically due to empty bed/vcf file or no SVs in VCF file
 
 # In[ ]:
+
 
 if df.shape[0] == 0:
     if args.formatIn == 'vcf':
@@ -105,11 +110,13 @@ if df.shape[0] == 0:
 
 # In[159]:
 
+
 if df['svtype'].isnull().all() & (args.formatIn == 'bed'):
     sys.exit('ERROR: likely missing SVTYPE column from bed file')
 
 
 # In[160]:
+
 
 print('\nformatting data...\n')
 
@@ -120,6 +127,7 @@ df['OldID'] = pd.Series(df.index.values)
 # Confirm correct chromosomes
 
 # In[161]:
+
 
 # check that the chroms all have chr in front
 if sum(df['chrom'].astype(str).str.startswith('chr',na=False))/df.shape[0] < 0.5:
@@ -137,6 +145,7 @@ validChrom['validChrom'] = True
 
 # In[162]:
 
+
 if args.assembly == 'GRCh37':
     df['currentIndex'] = list(df.index.values)
     df[['chrom','start','end','svtype','OldID','currentIndex']].to_csv(os.path.join(td,'svsForLiftover.csv'))
@@ -152,6 +161,7 @@ if args.assembly == 'GRCh37':
 # Change formatting, keep only dels and dups
 
 # In[166]:
+
 
 # remove all start and end values that are not numeric
 df = df[pd.to_numeric(df['start'], errors='coerce').notnull()].copy()
@@ -183,6 +193,7 @@ df['DEL'] = df['svtype'] == 'DEL'
 
 # In[167]:
 
+
 print('\nidentifying exonic deletions and duplications...\n')
 
 exons = pybedtools.BedTool('data/exons_Appris_featurized_transcript_Chr1-Y_loeuf.sorted.bed')
@@ -197,6 +208,7 @@ exonOverlap.drop_duplicates(subset='OldID', inplace=True)
 
 # In[ ]:
 
+
 # To reduce memory usage, delete unused variables
 del exons
 del a
@@ -206,6 +218,7 @@ del b
 # Drop variants that overlap no exons
 
 # In[ ]:
+
 
 out = df.merge(exonOverlap[['numExons','OldID']],how='left',on='OldID')
 del exonOverlap
@@ -230,12 +243,17 @@ if out.shape[0] != 0:
 
     # annotate SVs on each chromosome, using random forest trained on all other chroms, to avoid overfitting
     an['path'] = 0
-    presentChroms = an['chrom'].value_counts().index.values
-    for chrm in presentChroms:
-        rf = load('data/rfTrainedAllChromsExcept'+chrm+'.joblib')
-        X = an[an['chrom'] == chrm][['DEL','numExonsFinal','phyloP', 'lowestExonRank', 'allSkippable','lowestExonsInGene', 'anyConstExon','pLIMax','loeufMin', 'cdsFracStartMin', 'cdsFracEndMax', 'cdsFracMax', 'pLI_max25_ID', 'loeuf_min25_ID','topExp','topUsage','maxStrength']].copy()
-        an.loc[an['chrom'] == chrm,'path'] = rf.predict_proba(X)[:,1]
 
+# old version that did leave-one-chrom-out. No need for this.    
+#     presentChroms = an['chrom'].value_counts().index.values
+#     for chrm in presentChroms:
+#         rf = load('data/rfTrainedAllChromsExcept'+chrm+'.joblib')
+#         X = an[an['chrom'] == chrm][['DEL','numExonsFinal','phyloP', 'lowestExonRank', 'allSkippable','lowestExonsInGene', 'anyConstExon','pLIMax','loeufMin', 'cdsFracStartMin', 'cdsFracEndMax', 'cdsFracMax', 'pLI_max25_ID', 'loeuf_min25_ID','topExp','topUsage','maxStrength']].copy()
+#         an.loc[an['chrom'] == chrm,'path'] = rf.predict_proba(X)[:,1]
+
+    rf = load('data/rfTrainedAllChromsPy3.joblib')
+    X = an[['DEL','numExonsFinal','phyloP', 'lowestExonRank', 'allSkippable','lowestExonsInGene', 'anyConstExon','pLIMax','loeufMin', 'cdsFracStartMin', 'cdsFracEndMax', 'cdsFracMax', 'pLI_max25_ID', 'loeuf_min25_ID','topExp','topUsage','maxStrength']].copy()
+    an['path'] = rf.predict_proba(X)[:,1]
     an.set_index('OldID', inplace=True)
 else:
     an = pd.DataFrame()
@@ -244,6 +262,7 @@ else:
 # Annotate vcf with StrVCTVRE pathogenicity scores
 
 # In[174]:
+
 
 if args.formatIn == 'vcf':
     print('\nwriting annotated VCF...\n')
@@ -315,15 +334,12 @@ else:
 
 # In[175]:
 
+
 shutil.rmtree(td)
 
 
 # In[176]:
 
+
 print('\nFinished\n')
-
-
-# In[ ]:
-
-
 

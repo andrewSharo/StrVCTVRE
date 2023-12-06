@@ -6,6 +6,7 @@
 
 # In[19]:
 
+
 # may need to put each of these in it's own statement, throw an error if fails
 import sys
 import numpy as np
@@ -22,6 +23,7 @@ import filecmp
 
 
 # In[5]:
+
 
 parser = argparse.ArgumentParser(description='Test if StrVCTVRE is annotating correctly.')
 #parser.add_argument('-i','--input',help='Input file path',required=True,metavar = '/path/to/input/file',dest='pathIn')
@@ -40,12 +42,14 @@ args.pathOut = 'data/test.annotated.vcf.gz'
 
 # In[7]:
 
+
 td = tempfile.mkdtemp(prefix='StrVCTVRE.',suffix='.tmp')
 
 
 # read VCF or BED into one large csv file
 
 # In[8]:
+
 
 # if VCF
 if args.formatIn == 'vcf':
@@ -68,6 +72,7 @@ else:
 # Change formatting, keep only dels and dups
 
 # In[9]:
+
 
 print('\nformatting VCF data...\n')
 
@@ -115,6 +120,7 @@ df['DEL'] = df['svtype'] == 'DEL'
 
 # In[10]:
 
+
 print('\nidentifying exonic deletions and duplications...\n')
 
 exons = pybedtools.BedTool('data/exons_Appris_featurized_transcript_Chr1-Y_loeuf.sorted.bed')
@@ -131,6 +137,7 @@ exonOverlap.drop_duplicates(subset='OldID', inplace=True)
 
 # In[11]:
 
+
 out = df.merge(exonOverlap[['numExons','OldID']],how='left',on='OldID')
 out = out[out['numExons'] > 0]
 validExon = out.set_index('OldID').copy()
@@ -141,6 +148,7 @@ out = out[out['length'] < 3000000]
 
 # In[12]:
 
+
 out[['chrom','start','end','OldID','DEL']].to_csv(os.path.join(td,'svsForAnnotation.csv'))
 
 
@@ -148,27 +156,30 @@ out[['chrom','start','end','OldID','DEL']].to_csv(os.path.join(td,'svsForAnnotat
 
 # In[13]:
 
+
 print('\nscoring exonic deletions and duplications...\n')
 annotationFinalForStrVCTVRE.annotateSVs(os.path.join(td,'svsForAnnotation.csv'), os.path.join(td,'svsAnnotated.csv'), args.phylopPath, td)
 
 
 # In[14]:
 
+
 an = pd.read_csv(os.path.join(td,'svsAnnotated.csv'))
 
 
 # In[15]:
 
+
 # annotate SVs on each chromosome, using random forest trained on all other chroms, to avoid overfitting
 an['path'] = 0
 presentChroms = an['chrom'].value_counts().index.values
-for chrm in presentChroms:
-    rf = load('data/rfTrainedAllChromsExcept'+chrm+'.joblib')
-    X = an[an['chrom'] == chrm][['DEL','numExonsFinal','phyloP', 'lowestExonRank', 'allSkippable','lowestExonsInGene', 'anyConstExon','pLIMax','loeufMin', 'cdsFracStartMin', 'cdsFracEndMax', 'cdsFracMax', 'pLI_max25_ID', 'loeuf_min25_ID','topExp','topUsage','maxStrength']].copy()
-    an.loc[an['chrom'] == chrm,'path'] = rf.predict_proba(X)[:,1]
+rf = load('data/rfTrainedAllChromsPy3.joblib')
+X = an[['DEL','numExonsFinal','phyloP', 'lowestExonRank', 'allSkippable','lowestExonsInGene', 'anyConstExon','pLIMax','loeufMin', 'cdsFracStartMin', 'cdsFracEndMax', 'cdsFracMax', 'pLI_max25_ID', 'loeuf_min25_ID','topExp','topUsage','maxStrength']].copy()
+an['path'] = rf.predict_proba(X)[:,1]
 
 
 # In[16]:
+
 
 an.set_index('OldID', inplace=True)
 
@@ -176,6 +187,7 @@ an.set_index('OldID', inplace=True)
 # Annotate vcf with StrVCTVRE pathogenicity scores
 
 # In[17]:
+
 
 if args.formatIn == 'vcf':
     print('\nwriting annotated VCF...\n')
@@ -241,18 +253,15 @@ else:
 
 # In[18]:
 
+
 shutil.rmtree(td)
 
 
 # In[23]:
 
+
 if filecmp.cmp(args.pathOut,'data/test.correctAnnotation.vcf.gz',shallow=False):
     print("SUCCESS: StrVCTVRE is running correctly\n")
 else:
     print("ERROR: StrVCTVRE is not running correctly\n")
-
-
-# In[ ]:
-
-
 
