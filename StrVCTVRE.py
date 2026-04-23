@@ -33,6 +33,8 @@ parser.add_argument('-p','--phyloP',help='phyloP file path, defaults to \'data/h
                     metavar = 'path/to/hg38.phyloP100way.bw',dest='phylopPath')
 parser.add_argument('-a','--assembly',help='Genome assembly of input, either GRCh38 or GRCh37',choices=['GRCh37','GRCh38'],default='GRCh38',dest='assembly')
 parser.add_argument('-l','--liftover',help='Liftover executable path, required if assembly is GRCh37',required=False,metavar='/path/to/liftover',dest='pathLiftover')
+parser.add_argument('-t','--exon_transcripts',help='Exon transcript file path, defaults to \'data/exons_Appris_featurized_transcript_Chr1-Y_loeuf.sorted.bed\' when not provided',default='data/exons_Appris_featurized_transcript_Chr1-Y_loeuf.sorted.bed', type=str)
+parser.add_argument('-s','--scores',help='Path to the joblib file containing random forest scores, defaults to \'data/rfTrainedAllChromsPy3.joblib\' when not provided',default='data/rfTrainedAllChromsPy3.joblib', type=str)
 # for testing
 # args = parser.parse_args(['-i','/test/path/sept','-o','/test/output/sept'])
 
@@ -42,6 +44,11 @@ args = parser.parse_args()
 if args.assembly == 'GRCh37' and args.pathLiftover is None:
     parser.error("--assembly GRCh37 requires --liftover")
 
+if args.exon_transcripts != '' or not os.path.isfile(args.exon_transcripts):
+    parser.error('exon transcript file not found at ' + args.exon_transcripts + '. Provide an existing file using the -t or --exon_transcripts argument.')
+
+if args.scores != '' or not os.path.isfile(args.scores):
+    parser.error('random forest scores file not found at ' + args.scores + '. Provide an existing file using the -s or --scores argument.')
 
 # Create temporary directory to store files created, deleted after finished running
 
@@ -196,7 +203,7 @@ df['DEL'] = df['svtype'] == 'DEL'
 
 print('\nidentifying exonic deletions and duplications...\n')
 
-exons = pybedtools.BedTool('data/exons_Appris_featurized_transcript_Chr1-Y_loeuf.sorted.bed')
+exons = pybedtools.BedTool(args.exon_transcripts)
 df[['chrom','start','end','OldID']].to_csv(os.path.join(td,'svs.bed'),sep='\t', index=False,header=False)
 a = pybedtools.BedTool(os.path.join(td,'svs.bed'))
 b = a.intersect(exons, wa=True, wb=True).saveas(os.path.join(td,'svsExonOverlap.bed'))
@@ -251,7 +258,7 @@ if out.shape[0] != 0:
 #         X = an[an['chrom'] == chrm][['DEL','numExonsFinal','phyloP', 'lowestExonRank', 'allSkippable','lowestExonsInGene', 'anyConstExon','pLIMax','loeufMin', 'cdsFracStartMin', 'cdsFracEndMax', 'cdsFracMax', 'pLI_max25_ID', 'loeuf_min25_ID','topExp','topUsage','maxStrength']].copy()
 #         an.loc[an['chrom'] == chrm,'path'] = rf.predict_proba(X)[:,1]
 
-    rf = load('data/rfTrainedAllChromsPy3.joblib')
+    rf = load(args.scores)
     X = an[['DEL','numExonsFinal','phyloP', 'lowestExonRank', 'allSkippable','lowestExonsInGene', 'anyConstExon','pLIMax','loeufMin', 'cdsFracStartMin', 'cdsFracEndMax', 'cdsFracMax', 'pLI_max25_ID', 'loeuf_min25_ID','topExp','topUsage','maxStrength']].copy()
     an['path'] = rf.predict_proba(X)[:,1]
     an.set_index('OldID', inplace=True)

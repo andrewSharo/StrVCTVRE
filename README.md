@@ -121,6 +121,20 @@ chr2  345678  456789  DUP
 ```
 If you have any questions that aren't answered here, please [raise a new issue](https://github.com/andrewSharo/StrVCTVRE/issues)
 
+## Install via conda
+
+An alternative way to install StrVCTVRE is through conda. StrVCTVRE is available on bioconda, so it can be installed by running:
+
+```
+conda install -c bioconda strvctvre
+```
+
+When using the tool via conda, you will need to install the following additional files in order to run StrVCTVRE:
+
+1. The phyloP conservation scores as described in the relevant [chapter](#3-download-phylop-conservation-scores-for-human-genome-38) above.
+2. The random forest scores joblib file located in the located [here](data/rfTrainedAllChromsPy3.joblib) in the StrVCTVRE repository. You can use `--scores /path/to/rfTrainedAllChromsPy3.joblib` to indicate the path to this file when running StrVCTVRE.
+3. The exon transcript file located [here](data/exons_Appris_featurized_transcript_Chr1-Y_loeuf.sorted.bed) in the StrVCTVRE repository. You can use `--exon_transcripts /path/to/exons_Appris_featurized_transcript_Chr1-Y_loeuf.sorted.bed` to indicate the path to this file when running StrVCTVRE.
+
 ## Citation
 If you use StrVCTRE in your work, please cite:
 
