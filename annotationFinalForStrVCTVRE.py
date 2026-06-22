@@ -230,7 +230,6 @@ def annotateSVs(inpath, outpath, phylopPath, tempdir):
                               names=['chrom', 'start', 'stop', 'ID', 'uChrom', 'uStart', 'uStop', 'avgUsage', 'avgExp'])
     out = usageOverlap.groupby('ID').apply(topUsage,n=size)
     out.drop_duplicates(subset='ID', inplace=True)
-    del a
     del b
     
     if out.shape[0] == 0: 
@@ -250,7 +249,9 @@ def annotateSVs(inpath, outpath, phylopPath, tempdir):
             out = final[['ID']].copy()
             out['topUsage'] = usageMed
             out['topExp'] = expMed
-
+    
+    del a
+    
     out.reset_index(drop=True, inplace=True)
     final2 = final.merge(out[['ID', 'topUsage', 'topExp']], how='left', on='ID')
     del final
