@@ -6,6 +6,23 @@ Structural variant impact predictor developed by Andrew Sharo, Zhiqiang Hu, and 
 
 ### \*\*New\*\*: Visit our [Web Server](https://strvctvre.berkeley.edu) to annotate vcf or bed files with StrVCTVRE scores, or query a single SV
 
+## Run with Docker (optional)
+
+A `Dockerfile` is provided as an alternative to installing Python, conda, and the required packages manually (i.e. it replaces steps 1–4 below). From the cloned repository, build the image with:
+```
+docker build --platform linux/amd64 -t strvctvre:v1.10 .
+```
+The `--platform linux/amd64` flag is required, including on Apple Silicon / ARM machines, where it builds under emulation.
+
+The image does **not** include the 9.2GB `hg38.phyloP100way.bw` file (see step 3). Download it separately and mount the folder containing it (and a folder for your input/output) into the container. For example, to annotate a vcf file:
+```
+docker run --rm --platform linux/amd64 \
+  -v /path/to/phylop/folder:/software/strvctvre/data \
+  -v /path/to/your/files:/io \
+  strvctvre:v1.10 python StrVCTVRE.py -i /io/input.vcf -o /io/output.vcf
+```
+GRCh37 input additionally requires a LiftOver executable (see steps 6 and 8); mount it into the container and pass its path with `-a GRCh37 -l /path/to/liftOver`.
+
 ## To run StrVCTVRE, follow these steps:
 
 ### 1. Download and install Python 3 (if not done already)
