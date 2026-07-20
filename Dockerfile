@@ -1,3 +1,6 @@
+# This Dockerfile builds a container image for StrVCTVRE, a tool for structural variant classification.
+# It uses micromamba to manage dependencies and sets up the environment for running StrVCTVRE.
+# It's also been built for use with Docker and Apptainer, so it can be run on HPC clusters.
 FROM mambaorg/micromamba:ubuntu24.04 AS micromamba
 
 FROM ubuntu:24.04
@@ -21,7 +24,18 @@ WORKDIR /software/strvctvre
 
 COPY . .
 
-# Update CERTs if on VPN
+# The console script (`StrVCTVRE = "StrVCTVRE:main"`) imports `main` from the
+# module, but the committed StrVCTVRE.py runs argparse + all logic at module
+# level and defines no `main()`. Wrap the entire script in `def main():` and add
+# a `__main__` guard, in-place in the image so the repo source stays untouched.
+RUN awk '\
+BEGIN { print "def main():" } \
+{ if ($0 ~ /^[[:space:]]*$/) print $0; else print "    " $0 } \
+END { print ""; print "if __name__ == \"__main__\":"; print "    main()" } \
+' /software/strvctvre/StrVCTVRE.py > /tmp/StrVCTVRE.py \
+  && mv /tmp/StrVCTVRE.py /software/strvctvre/StrVCTVRE.py
+
+# Update CERTs if building on VPN
 # RUN wget -P /tmp/ <cert_url>
 # ARG CURL_CA_BUNDLE=/tmp/<cert_file>
 
@@ -56,12 +70,32 @@ RUN --mount=type=cache,target=/software/conda/pkgs \
     micromamba create -y -f /software/strvctvre/environment_py3.yml && \
     micromamba clean --all --yes
 
-#############################################################
-#############################################################
-#############################################################
+# Install StrVCTVRE in editable mode so that it's available as a console script (e.g. `StrVCTVRE --help` vs `python StrVCTVRE.py --help`)
+RUN --mount=type=cache,target=/software/conda/pkgs \
+    micromamba run -n $ENV_NAME pip --trusted-host pypi.org --trusted-host files.pythonhosted.org install -e .
 
-ENV PATH=/software/strvctvre:/software:$PATH
+WORKDIR /software/
+#############################################################
+#############################################################
+#############################################################
+# Add the micromamba activation script to the system-wide bashrc so that the environment is activated for all users on run/exec for apptainer and docker.
+RUN echo "source /usr/local/bin/_activate_current_env.sh" >> /etc/bash.bashrc && \
+    echo "source /usr/local/bin/_activate_current_env.sh" >> .bash_env && \
+    echo "source /etc/bash.bashrc" >> .bash_env
+
+# any calls to bash will load this environment (e.g. docker/apptainer exec bash -c "cmd")
+ENV BASH_ENV=/software/.bash_env
 
 RUN chmod +x /software/strvctvre/strvctvre_entrypoint.sh
 
+ENV PATH=/software/strvctvre:/software:$PATH
+
+# The `pip install -e .` above installs the `StrVCTVRE` console script, but
+# setuptools flat-layout auto-discovery picks up the `data/` dir as the package
+# instead of the top-level StrVCTVRE.py module, so `from StrVCTVRE import main`
+# fails at runtime. Put the repo on PYTHONPATH so the module is importable.
+ENV PYTHONPATH=/software/strvctvre
+
 ENTRYPOINT ["/software/strvctvre/strvctvre_entrypoint.sh"]
+
+CMD ["/bin/bash"]
