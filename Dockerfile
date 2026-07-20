@@ -90,6 +90,7 @@ RUN chmod +x /software/strvctvre/strvctvre_entrypoint.sh
 
 ENV PATH=/software/strvctvre:/software:$PATH
 
+WORKDIR /software/strvctvre
 # The `pip install -e .` above installs the `StrVCTVRE` console script, but
 # setuptools flat-layout auto-discovery picks up the `data/` dir as the package
 # instead of the top-level StrVCTVRE.py module, so `from StrVCTVRE import main`

@@ -9,19 +9,32 @@ Structural variant impact predictor developed by Andrew Sharo, Zhiqiang Hu, and 
 ## Run with Docker (optional)
 
 A `Dockerfile` is provided as an alternative to installing Python, conda, and the required packages manually (i.e. it replaces steps 1–4 below). From the cloned repository, build the image with:
-```
+```bash
+git clone --depth 1 https://github.com/andrewSharo/StrVCTVRE
+cd StrVCTVRE
 docker build --platform linux/amd64 -t strvctvre:v1.10 .
 ```
+This docker image creates a console script that can be run with the command `StrVCTVRE`.
+
 The `--platform linux/amd64` flag is required, including on Apple Silicon / ARM machines, where it builds under emulation.
 
 The image does **not** include the 9.2GB `hg38.phyloP100way.bw` file (see step 3). Download it separately and mount the folder containing it (and a folder for your input/output) into the container. For example, to annotate a vcf file:
-```
+```bash
+cd data
+wget http://hgdownload.cse.ucsc.edu/goldenpath/hg38/phyloP100way/hg38.phyloP100way.bw
+cd ..
+
+# Try the test data
 docker run --rm --platform linux/amd64 \
-  -v /path/to/phylop/folder:/software/strvctvre/data \
+  -v $(pwd)/data:/software/strvctvre/data \
   -v /path/to/your/files:/io \
-  strvctvre:v1.10 python StrVCTVRE.py -i /io/input.vcf -o /io/output.vcf
+  strvctvre:v1.10 StrVCTVRE -i data/test.vcf.gz -o /io/output.vcf
 ```
-GRCh37 input additionally requires a LiftOver executable (see steps 6 and 8); mount it into the container and pass its path with `-a GRCh37 -l /path/to/liftOver`.
+
+## Run with apptainer/snakemake (optional)
+Snakemake runs apptainer exec mode.  By default apptainer will mount the current working directory and use it as in the container
+as the current working directory.  This means that you should have the data folder system linked in snakemake's working directory
+for the StrVCTVRE console script (or StrVCTVRE.py) to find the hg38.phyloP100way.bw file.
 
 ## To run StrVCTVRE, follow these steps:
 
